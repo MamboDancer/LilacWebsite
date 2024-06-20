@@ -1,0 +1,655 @@
+<script>
+    const { createApp } = Vue
+
+    $.post(`/api/db/getFlowers`)
+        .always((response) => {
+            if (response) {
+                showFlowers(response)
+                addToSearch(response)
+
+            }
+            else alertify.error("Помилка серверу!")
+        })
+
+
+
+    function addToSearch(data) {
+        $(".search-list").html("")
+        data.forEach(el => {
+            let newElement = `<li class="flower-search-el" flowerid="${el.id}"> 
+                    <img src="${el.image}">
+                    <p class="search-flower-name">${el.name}</p>
+                </li>`
+            $(".search-list").append(newElement)
+        })
+
+    }
+    //search
+
+
+    function showFlowers(data) {
+        $("#main-list").html("")
+        let categories = []
+        data.forEach((el) => {
+            if (!categories.includes(el.category)) categories.push(el.category)
+        })
+        categories.forEach((cat) => {
+            // console.table(data)
+            $("#main-list").append(`<p class="list-header" id="${cat}">${cat}</p>`)
+            let ul = $(`<ul class="${cat} flowers swiper"></ul>`)
+            let flower_wrapper = $(`<div class="flower-wrapper swiper-wrapper"> </div>`)
+            data.forEach((flower) => {
+                if (flower.category == cat) {
+                    let actualprice = `<p class="flower-price">₴${flower.price}</p>`
+                    let actualimg = `<img src="${flower.image}" class="flower-main-image">`
+
+                    if (flower.saleprice > 0) {
+                        const salepercent = (Number(flower.saleprice) * 100) / Number(flower.price)
+                        let displayedsalepercent = `<div class="sale-banner">Знижка ${100 - salepercent.toFixed(0)}%</div>`
+                        if (_SW < 767) displayedsalepercent = ""
+                        actualprice = `<div class="discount-price">
+                            <p class="flower-price">₴${flower.saleprice}</p>
+                            <p class="flower-old-price">₴${flower.price}</p>
+                        </div>`
+
+                        actualimg = `
+                            <div class="discount-image">
+                                <img src="${flower.image}" class="flower-main-image">
+                                ${displayedsalepercent}
+                            </div>
+                        `
+                    }
+                    let newel = $(flower_wrapper).append(`
+                    <div class="fl swiper-slide" flower-id="${flower.id}">
+                        ${actualimg}
+                        <div class="flower-info">
+                            <p class="flower-name">${flower.name}</p>
+                            ${actualprice}
+                        </div>
+                        <div class="buy-flower"><i class="fa fa-bag-shopping"></i><p class="buy-button-text">Objednať</p></div>
+                        </div>`)
+
+                }
+            })
+            $(ul).append(flower_wrapper)
+            $(ul).append(`<div class="swiper-pagination"></div>`)
+            $("#main-list").append(ul)
+            if (_SW < 767) {
+                $(".flower-wrapper").removeClass("swiper-wrapper")
+                $(".flowers").removeClass("swiper")
+                $(".fl").removeClass("swiper-slide")
+            }
+
+        })
+
+        const raw_offset = (_SW * 100) / 1440
+        const offset = (215 * raw_offset) / 100
+        var swiper = new Swiper(".flowers", {
+            direction: "horizontal",
+            centeredSlides: false,
+            speed: 300,
+            initialSlide: -1,
+            slidesPerView: 4,
+            slidesPerGroup: 1,
+            freeMode: false,
+            slidesOffsetBefore: offset,
+            pagination: {
+                el: '.swiper-pagination',
+                type: 'bullets',
+            },
+        })
+
+
+        $('.sale-banner').css('width', $('.sale-banner').parent().find('img').width())
+        // $('.sale-banner').css('bottom',$('.flower-info').height() +$('.buy-flower').height() )
+    }
+
+
+
+
+
+    var FLOWERNAME = ""
+    var EDIT = false
+    let cart = localStorage.getItem("cart")
+    const _SW = $(window).width()
+    $(document).ready(function () {
+        $("svg").attr("stroke", "#0eb1d5")
+        if (!cart) localStorage.setItem("cart", "[]")
+        showCart(cart)
+        var manip_list_items = function () {
+            let t = $(this)
+            if (_SW < 767) {
+                const listItemsHeight = $(t).find(".list-items").outerHeight()
+                const thisHeight = $(this).height()
+                $(this).height(thisHeight + listItemsHeight)
+            }
+            $(t).find(".list-items").fadeIn(100)
+            $(t).find("p").css("color", "#79cbde")
+        }
+        var unmanip_list_items = function () {
+            let t = $(this)
+            if (_SW < 767) {
+                const listItemsHeight = $(t).find(".list-items").outerHeight()
+                const thisHeight = $(this).height()
+                $(this).height(thisHeight - listItemsHeight)
+            }
+            $(t).find(".list-items").fadeOut(100)
+            $(t).find("p").css("color", "black")
+        }
+        $("nav > ul").hover(manip_list_items, unmanip_list_items)
+
+        const lists = $("nav").find("ul")
+        if (_SW < 767) {
+            var rect = document.querySelector("nav ul p").getBoundingClientRect();
+            $(".list-items").css("top", rect.bottom * 1.32 + "px")
+        }
+        if (_SW > 767)
+            for (let i = 0; i < $(lists).length; i++) {
+                const lst = $(lists).find("div")[i]
+                const p = $(lists).find("p")[i]
+                let wid = $(lst).parent().find("p").width() - 3
+                $(lst).css("width", `${wid}px`)
+                $(p).css("width", `${wid}px`)
+            }
+        $("body").on("mouseenter", ".flower-search-el", function () {
+            $(this).find("img").css({
+                "transform": "scale(2)",
+                "z-index": "5"
+            })
+        })
+
+        $("body").on("mouseleave", ".flower-search-el", function () {
+            $(this).find("img").css({
+                "transform": "scale(1)",
+                "z-index": "1"
+            })
+        })
+
+        $(".search-input").on("input", function () {
+            let lilist = $(".search-list").find("li")
+            $(lilist).css("display", "none")
+            let userinput = $(this).val()
+            showSearchItems(userinput)
+        })
+
+        $(".search-input").on("focus", function () {
+            let userinput = $(this).val()
+            showSearchItems(userinput)
+        })
+
+        $(".search-bar").on("click", function () {
+            event.stopPropagation()
+        })
+
+
+
+        $("html").on("click", ".flower-search-el", function () {
+            const flowerid = $(this).attr("flowerid")
+            showBuyModal(flowerid)
+        })
+
+        $("html").on("click", ".flower-wrapper .buy-flower", function () {
+            const flowerid = $(this).parent().attr("flower-id")
+            EDIT = false
+            showBuyModal(flowerid)
+        })
+        $(".buy-modal .order-form .flower-count").on("keyup input", function () {
+            let priceEl = $(this).parent().find(".flower-price")
+            let price = Number($(priceEl).attr("price"))
+            if (Number($(this).val()) > 999) {
+                $(this).val("999")
+            }
+            if (Number($(this).val()) < 0) {
+                $(this).val("1")
+            }
+            if ($(this).val() == "0") {
+                $(this).val("1")
+                return
+            }
+            if (!$(this).val()) {
+                let last_price = price
+                if (Number.isInteger(price)) last_price = last_price.toFixed(0)
+                $(priceEl).html(`₴${(last_price).toFixed(2)}`)
+                return
+            }
+            $(this).css("width", `${15 + $(this).val().length * 8}%`)
+            let last_price = Number(Number(price * Number($(this).val())).toFixed(2))
+            if (Number.isInteger(last_price)) last_price = last_price.toFixed(0)
+            $(priceEl).html(`₴${last_price}`)
+        })
+        $(".buy-modal-wrapper, .order-modal-wrapper").on("click", function () {
+            $(this).css("display", "none")
+        })
+        $(".buy-modal, .order-modal").on("click", function (event) {
+            event.stopPropagation()
+        })
+
+        $(".to-cart-button").click(function () {
+            if (EDIT)
+                editCart(FLOWERNAME)
+            try {
+                const parent = $(this).parent().parent()
+                const name = $(parent).find(".flower-name").html()
+                const id = $(parent).find(".flower-name").attr("flower-id")
+                const price = $(parent).find(".flower-price").html().split("₴")[1]
+                const img = $(parent).find(".flower-image").attr("src")
+                const count = $(parent).find(".flower-count").val()
+                const el = {
+                    flowerName: name,
+                    flowerPrice: Number(price),
+                    flowerImage: img,
+                    flowerCount: Number(count),
+                    flowerId: id
+                }
+                let thiscart = JSON.parse(localStorage.getItem("cart"))
+                let newFlower = true
+                thiscart.forEach(cartItem => {
+                    if (cartItem.flowerName == el.flowerName) {
+                        cartItem.flowerPrice = (Number(cartItem.flowerPrice) + el.flowerPrice).toFixed(2)
+                        cartItem.flowerCount += el.flowerCount
+                        newFlower = false
+                        return
+                    }
+                })
+                if (newFlower) {
+                    thiscart.push(el)
+                }
+                localStorage.setItem("cart", JSON.stringify(thiscart))
+                cart = localStorage.getItem("cart")
+                showCart(cart)
+                alertify.success('Успішно додано в кошик!')
+                $(".buy-modal-wrapper").css("display", "none")
+            }
+            catch {
+                alertify.error('Сталася помилка!')
+            }
+
+        })
+
+        $("html").on("click", ".cart", function () {
+            const li = $(".cart-items").find("li")
+            if ($(li).length <= 1) {
+                alertify.message("Кошик порожній!")
+                return
+            }
+            if ($(".cart-items").css("display") == "grid") $(".cart-items").css("display", "none")
+            else $(".cart-items").css("display", "grid")
+            if ($(li).css("display") == "grid") $(li).css("display", "none")
+            else {
+                $(li).css("display", "grid")
+                $(li).css("scale", "1")
+                $(li).css("border", "0")
+                $(li).css("z-index", "11")
+                $(li).find("p").css("text-decoration", "none")
+                $(".fl-qp").css("display", "grid")
+                $(".edit-order-buttons").css("display", "none")
+            }
+            event.stopPropagation()
+        })
+
+        $("html").on("click", ".cart-items > *", function () {
+            event.stopPropagation()
+        })
+
+        function hidecart() {
+            $(".cart-items").css("display", "none")
+            const li = $(".cart-items").find("li")
+            $(li).css("display", "none")
+            let lilist = $(".search-list").find("li")
+            $(lilist).css("display", "none")
+        }
+        $("body").click(function () {
+            if (_SW > 767) {
+                hidecart()
+            }
+        })
+
+        $("html").on("mouseover", ".cart-item-flower", function () {
+            const flowers = $(".cart-item-flower")
+            for (let i = 0; i < $(flowers).length; i++) {
+                hideEditOrderButtons($(flowers).eq(i))
+            }
+            showEditOrderButtons($(this))
+        })
+
+        $("html").on("click", ".cart-order-button", function () {
+            showOrderModal()
+            $(".confirm-order-button").prop('disabled', false)
+                .html('Podtvrdiť objednávku')
+        })
+        $(".cart-order-button").on("click", function () {
+            showOrderModal()
+            $(".confirm-order-button").prop('disabled', false)
+                .html('Podtvrdiť objednávku')
+        })
+        $(".last-order-form").submit(function () {
+            $(".confirm-order-button").prop('disabled', true)
+                .html('<i class="fas fa-spinner fa-spin"></i>')
+            var $inputs = $('.last-order-form input')
+
+            var values = {}
+            $inputs.each(function () {
+                values[this.name] = $(this).val()
+            })
+            values.packing = $(".packing").is(":checked")
+            sendOrder(values)
+            event.preventDefault()
+        })
+        function showOrderCart() {
+
+            $(".order-cart-items").html("")
+            let ccart = JSON.parse(cart)
+            ccart.forEach(cartItem => {
+                $(".order-cart-items").append(`
+                    <li class="order-item-flower" flower-id="${cartItem.flowerId}">
+                        <img src="${cartItem.flowerImage}" class="flower-image">
+                        <p>${cartItem.flowerName}</p>
+                        <div class="fl-qp">
+                            <p>₴${cartItem.flowerPrice}</p>
+                            <p>К-ть: ${cartItem.flowerCount}</p>
+                        </div>
+                    </li>
+                `)
+            })
+        }
+        function showOrderModal() {
+            $(".order-modal-wrapper").css('display', 'grid')
+            $(".pickup").prop('checked', true)
+            $('.address').prop("disabled", true)
+            $(".time , .time-about").toggle(false)
+            $(".user-order-info input").val("")
+            $(".cart-items").css("display", "none")
+            $(".cart-item-flower").css("display", "none")
+            showOrderCart()
+        }
+
+
+        if (_SW <= 767) {
+            let icons = $("nav > ul > p")
+            for (let i = 1; i <= $(icons).length; i++) {
+                const h = $(icons).eq(i - 1).html()
+                $(icons).eq(i - 1).html(`
+                <img src = "/images/icons/icon${i}.png" class="navbar-icon">
+            `+ h)
+            }
+
+            const cartwrapper = $(".cart-wrapper")
+            const search = $("#search")
+            $(".cart-wrapper").remove()
+            $("#search").remove()
+            $("body").prepend($(cartwrapper))
+            //
+            $("html").on("click", ".cart-item-flower", function () {
+                const flowers = $(".cart-item-flower")
+                for (let i = 0; i < $(flowers).length; i++) {
+                    hideEditOrderButtons($(flowers).eq(i))
+                }
+                showEditOrderButtons($(this))
+            })
+            $("html").on("click", ".close-cart", function () {
+                const li = $(".cart-items").find("li")
+                if ($(li).length <= 1) {
+                    alertify.message("Кошик порожній!")
+                    return
+                }
+                $(".cart-items").css("display", "none")
+                if ($(li).css("display") == "grid") $(li).css("display", "none")
+                else $(li).css("display", "grid")
+            })
+
+        }
+
+
+    })
+    $(".pickup").change(function () {
+        $('.address').prop("disabled", this.checked)
+        $(".time , .time-about").fadeToggle()
+    })
+
+
+
+    function getTimeNow() {
+        var currentdate = new Date();
+        return datetime = currentdate.getDate() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds()
+    }
+
+    function parseCart(cart, userData) {
+        
+        var price = 0
+        var parsedCart = `*Нове замовлення: *
+                            %0A${getTimeNow()}`
+        var count = 0
+        cart.forEach(el => {
+            parsedCart += `
+            %0A№${++count}
+            %0A*Товар*: ${el.flowerName} 
+            %0A*Кількість*: ${el.flowerCount} шт
+            %0A*Ціна*: ${el.flowerPrice} ₴
+            %0A---%0A
+            `
+            price += el.flowerPrice
+        })
+        userData.packing ? price += 70 : false
+        parsedCart += `%0A*Пакування : * ${userData.packing ? "ТАК" : "НІ"}`
+        parsedCart += `%0AЗагальна ціна корзини : ${price} ₴`
+        parsedCart += `
+            %0A
+            %0A%0A*Покупець : *
+            %0A---
+            %0A*Ім'я*: ${userData.username} 
+            %0A*Адреса доставки*: ${$(".pickup").prop("checked") ? "🙅Заберу сам" : `🗳️${userData.useraddress} %0A*Час доставки*:⏰${userData.usertime} , 📅${userData.userdate}`}
+            %0A*Телефон: *: ${userData.usernumber}
+            %0A---
+            `
+        return parsedCart
+    }
+    function sendOrder(userData) {
+        let tgResponce = false
+        let dbResponce = false
+        let CART = localStorage.getItem('cart')
+        const cart = parseCart(JSON.parse(CART), userData)
+        const UD = `[${JSON.stringify(userData)}]`
+        CART = `[${CART.substring(1, CART.length - 1)}]`
+        const CURRENTTIME = getTimeNow()
+        const ORDERTIME = `${userData.usertime}/${userData.userdate}`
+        const PACKING = userData.packing
+        $.post(`/api/db/createOrder`, { CART, UD, CURRENTTIME, ORDERTIME, PACKING})
+            .always(function (dbstatus) {
+                if (dbstatus) dbResponce = true
+                $.post(`/sendorder`, { cart })
+                    .always(function (tgstatus) {
+                        if (tgstatus) tgResponce = true
+                        if (tgResponce && dbResponce) {
+                            Swal.fire({
+                                title: `Дякуємо за замовлення!`,
+                                text: `Найближчим часом очікуйте дзвінка для підтвердження замовлення.`,
+                                icon: "success",
+                                showDenyButton: false,
+                                confirmButtonText: "Підтвердити",
+                                denyButtonText: "Відміна"
+                            })
+                            localStorage.setItem("cart", "[]")
+                            showCart("[]")
+                            $('.order-modal-wrapper').hide()
+                            $('.cart-items').hide()
+                        }
+                        else {
+                            Swal.fire({
+                                title: `Ой!`,
+                                text: `Щось пішло не так...`,
+                                icon: "error",
+                                showDenyButton: false,
+                                confirmButtonText: "ОК",
+                                denyButtonText: "Відміна"
+                            })
+                        }
+                    })
+            })
+
+    }
+    function showEditOrderButtons(el) {
+        $(el).find('p').css("text-decoration", "underline")
+        $(el).find(".fl-qp").css("display", "none")
+        $(el).find(".edit-order-buttons").css("display", "flex")
+        $(el).find(".edit-order-buttons").css("text-decoration", "none")
+        $(el).css("scale", "1.1")
+        $(el).css("border", "1px solid black")
+        $(el).css("z-index", "22")
+    }
+    function hideEditOrderButtons(el) {
+        $(el).css("scale", "1")
+        $(el).css("border", "0")
+        $(el).css("z-index", "11")
+        el = $(el).parent()
+        $(el).find(".fl-qp").css("display", "grid")
+        $(el).find('p').css("text-decoration", "none")
+        $(el).find(".edit-order-buttons").css("display", "none")
+
+    }
+
+    function showCart(cart) {
+        $(".cart-items").html("")
+        cart = JSON.parse(cart)
+        try {
+            cart.forEach(cartItem => {
+                $(".cart-items").append(`
+                    <li class="cart-item-flower" flower-id="${cartItem.flowerId}">
+                        <img src="${cartItem.flowerImage}" class="flower-image">
+                        <p>${cartItem.flowerName}</p>
+                        <div>
+                            <div class="fl-qp">
+                                <p>₴${cartItem.flowerPrice}</p>
+                                <p>К-ть: ${cartItem.flowerCount}</p>
+                            </div>
+                            <div class="edit-order-buttons">
+                                <i class="fa fa-trash delete-flower-order"></i>
+                                <i class="fa fa-pen edit-flower-order" ></i>
+                            </div>
+                        </div>
+                    </li>
+                `)
+            })
+            $(".cart-items").append(`
+            <li class="cart-order-button-wrapper">
+                <div class="cart-order-button">Objednať</div>
+            </li>`)
+            count = cart.length
+            if (count <= 0) {
+                $(".cart-item-count").css("opacity", "0")
+                // $(".cart-items").css("display", "none")
+            }
+            else {
+                $(".cart-item-count").css("opacity", "100")
+                // $(".cart-items").css("display", "grid")
+            }
+            if (count > 9) count = "9+"
+            $(".cart-item-count").html(count)
+            if (_SW <= 767) $(".cart-items").prepend("<p class='close-cart'><i class='clcrt fa fa-x'></i></p>")
+        }
+        catch
+        {
+            $(".cart-item-count").css("opacity", "0")
+        }
+
+
+        $("html").on("click", ".delete-flower-order", function () {
+            if (_SW < 767) {
+                const li = $(".cart-items").find("li")
+                $(li).css("display", "none")
+                $(".cart-items").css("display", "none")
+                let lilist = $(".search-list").find("li")
+                $(lilist).css("display", "none")
+            }
+            var flowerName = $(event.target).parent().parent().parent().children()[1]
+            flowerName = $(flowerName).html()
+            Swal.fire({
+                title: `Прибрати "${flowerName}" з кошика?`,
+                icon: "question",
+                showDenyButton: true,
+                confirmButtonText: "Так",
+                denyButtonText: "Відміна"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    editCart(flowerName)
+                    alertify.message(`"${flowerName}" видалено з кошика`)
+                    $(".cart-items").css("display", "none")
+                } else if (result.isDenied) {
+
+                }
+            })
+        })
+
+        $("html").on("click", ".edit-flower-order", function () {
+            EDIT = true
+            const flower = $(event.target).parent().parent().parent()
+            const flowerId = $(flower).attr("flower-id")
+            var flowerName = $(flower).children()[1]
+            flowerName = $(flowerName).html()
+            FLOWERNAME = flowerName
+            $(".cart-items").css("display", "none")
+            showBuyModal(flowerId)
+        })
+
+    }
+    function editCart(flowerName) {
+        var oldCart = JSON.parse(localStorage.getItem('cart'))
+        var FLOWER
+        for (let i = 0; i < oldCart.length; i++) {
+            if (oldCart[i].flowerName === flowerName) {
+                oldCart.splice(i, 1)
+            }
+        }
+        localStorage.setItem('cart', JSON.stringify(oldCart))
+        cart = localStorage.getItem('cart')
+        showCart(cart)
+    }
+    function showBuyModal(id) {
+        el = $(`[flower-id="${id}"]`)
+        $(".buy-modal-wrapper").css("display", "grid")
+        $(".cart-item-flower").css("display", "none")
+        $(".cart-items").css("display", "none")
+        if (EDIT)
+            $(".buy-modal-wrapper").find('.to-cart-button').html("Змінити")
+        else
+            $(".buy-modal-wrapper").find('.to-cart-button').html("В Кошик")
+        let parent = $(el)
+        let flowerData = {
+            flowerName: $(parent).find(".flower-name").html(),
+            flowerImage: $(parent).find("img").attr("src"),
+            flowerPrice: $(parent).find(".flower-price").html(),
+            flowerId: id
+        }
+        let form = $(".buy-modal-wrapper .order-form")
+        $(form).find(".flower-name").html(flowerData.flowerName)
+        $(form).find(".flower-name").attr("flower-id", flowerData.flowerId)
+        $(form).find(".flower-image").attr("src", flowerData.flowerImage)
+        if ($(parent).find(".flower-old-price").html()) $(form).find(".flower-price").css('color', 'red')
+        else $(form).find(".flower-price").css('color', 'black')
+        $(form).find(".flower-price").html(flowerData.flowerPrice)
+        $(form).find(".flower-price").attr("price", flowerData.flowerPrice.split("₴")[1])
+        $(form).find("input").val(1)
+    }
+
+
+
+    function showSearchItems(userinput) {
+        let lilist = $(".search-list").find("li")
+        if (userinput.length >= 3) {
+            for (let i = 0; i < lilist.length; i++) {
+                let curel = $(lilist)[i]
+                if ($(curel).html().toLocaleLowerCase().includes(userinput.toLowerCase())) {
+                    $(curel).css("display", "flex")
+                }
+                else {
+                    $(curel).css("display", "none")
+                }
+            }
+        }
+    }
+
+</script>

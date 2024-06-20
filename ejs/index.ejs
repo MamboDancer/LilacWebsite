@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("./partials/links.ejs") %>
+        <script src="https://unpkg.com/vue@3.2.47"></script>
+        <link href="/styles/mainstyle.css" rel="stylesheet">
+        <link href="/styles/phone-main.css" rel="stylesheet">
+        <meta name="keywords" content="Квіти, квіти Київ, замовлення букетів, букет, букет Київ, доставка квітів, доставка квітів Київ, троянди, букет троянд, розы, букет роз, тюльпани, букет тюльпанів, доставка тюльпанів, екзотичні квіти, кімнатні рослини, фурнітура для квітів, квіти в коробці, цветы в коробке, амаріліс, еустома, эустома, мягкие игрушки, цветы киев, доставка цветов киев, букет хризантеми, гортензія, Ілекс, Илекс, хамелациум, эвкалипт, гіпсофіла, букет гіпсофіли, букет пионов, півонія, ромашки, упаковка подарунків, корзина з квітами, кущові троянди, піоновидна троянда, авторський букет, керамічні горщики, бамбук, бавовна, декор, весільний букет, букет нареченої, оформлення весілля, свадебный букет, букет невесты" />
+        <meta name="description" content="" />
+        <title>LilacFlowers</title>
+
+</head>
+
+<body class="body">
+    <header>
+        <corner>
+            <div class="full-header">
+                <img class="sub-image" title="sub-logo" src="./images/const/F4.png">
+                <img class="logo" title="logo" src="./images/const/LilacLogo.png">
+            </div>
+            <div class="contacts">
+                <div class="phone"><a href="tel:+380671892177">+PHONENUMBER</a></div>
+                <div class="addr">
+                    <p><a href="https://maps.app.goo.gl/bzQwa6B78rbMwvnq8" target="_blank">ADDRESS</a>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="cart-wrapper">
+                <div class="cart">
+                    <i class="fa fa-shopping-cart cart-icon"></i>
+                    <div class="cart-item-count"></div>
+                </div>
+                <ul class="cart-items">
+                </ul>
+            </div>
+        </corner>
+        <nav>
+                <div id="search">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Hľadanie" class="search-input">
+                        <i class="fa fa-search" id="search-button"></i>
+
+                    </div>
+                    <ul class="search-list">
+
+                    </ul>
+                </div>
+        </nav>
+    </header>
+    <div class="main-block">
+        <div class="main-categories">
+            <%- include("./partials/categories.ejs") %>
+        </div>
+        <div class="fp-items"></div>
+    </div>
+    <div class="buy-modal-wrapper">
+        <div class="buy-modal">
+            <div action="" class="order-form">
+                <p class="flower-name"></p>
+                <img src="" alt="" class="flower-image">
+                <div class="ui-grid">
+                    <p class="flower-price"></p>
+                    <button class="to-cart-button">В Кошик</button>
+                    <input type="number" class="flower-count" min="1" max="999">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="order-modal-wrapper">
+        <div class="order-modal">
+            <p class="header">Vaša objednávka</p>
+            <ul class="order-cart-items">
+            </ul>
+            <div class="user-order-info">
+                <form class="last-order-form">
+                    <input class="name" type="text" placeholder="Vaše meno" required name="username">
+                    <input class="number" type="tel" placeholder="Telefónne číslo" required name="usernumber">
+                    <div class="order-checkboxes">
+                        <label for="pickup">Vyzdvihnutie na predajni</label>
+                        <input type="checkbox" name="pickup" class="pickup">
+                    </div>
+                    <input type="text" class="address" placeholder="Adresa doručenia" required name="useraddress">
+                    <small class="time-about">Doručiť o: </small>
+                    <div class="order-time"><input type="date" class="time date-time" name="userdate" min='2023-01-01'
+                            max='2100-01-01'> <input type="time" class="time" name="usertime" min="09:00" max="18:00">
+                    </div>
+                    <button class="confirm-order-button">Podtvrdiť objednávku</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p class="footer-header">O NÁS</p>
+        <div class="underline"></div>
+        <ul class="footer-topics">
+            <li class="topic-element">
+                <svg class="topic-icon" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plant-2"
+                    width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M2 9a10 10 0 1 0 20 0" />
+                    <path d="M12 19a10 10 0 0 1 10 -10" />
+                    <path d="M2 9a10 10 0 0 1 10 10" />
+                    <path d="M12 4a9.7 9.7 0 0 1 2.99 7.5" />
+                    <path d="M9.01 11.5a9.7 9.7 0 0 1 2.99 -7.5" />
+                </svg>
+                <div>
+                    <p class="topic-header">Naši kvetinári</p>
+                    <p class="topic-content">Sú profesionáli s bohatými skúsenosťami a talentom, pripravení splniť vaše najvyššie požiadavky. Budú si môcť vybrať perfektnú kombináciu kvetov na akúkoľvek príležitosť – od prvého rande až po svadobný obrad. Môžete si byť istí, že každý kvetinový aranžmán je vyjadrením vašich pocitov. </p>
+                </div>
+            </li>
+            <li class="topic-element">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-truck" width="44"
+                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                    <path d="M5 17h-2v-11a1 1 0 0 1 1 -1h9v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" />
+                </svg>
+                <div>
+                    <p class="topic-header">Doručenie</p>
+                    <p class="topic-content">Vďaka našej donáškovej službe je proces prijímania kvetov jednoduchý a príjemný. Prinášame krásu priamo k vašim dverám alebo na určenú adresu, čím pomáhame urobiť každý okamih nezabudnuteľným.</p>
+                </div>
+            </li>
+            <li class="topic-element">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-books" width="44"
+                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" />
+                    <path d="M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z" />
+                    <path d="M5 8h4" />
+                    <path d="M9 16h4" />
+                    <path
+                        d="M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z" />
+                    <path d="M14 9l4 -1" />
+                    <path d="M16 16l3.923 -.98" />
+                </svg>
+                <div>
+                    <p class="topic-header">Katalóg</p>
+                    <p class="topic-content">Pozývame vás na prelistovanie nášho rozmanitého katalógu, kde nájdete kytice na každú príležitosť – od svadobných obradov až po každodenné radosti. V našom sortimente nájdete rôzne kvety: elegantné kosatce, jemné ľalie, nádherné orchidey, rôzne ruže, svetlé tulipány a pôvabné hortenzie. Každý druh kvetu je samostatným majstrovským dielom prírody, s výberom ktorého vám pomôžeme a vytvoríme pôsobivý kvetinový aranžmán.</p>
+                </div>
+            </li>
+            <li class="topic-element">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-tag-starred" width="44"
+                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M7.5 7.5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                    <path
+                        d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3z" />
+                    <path
+                        d="M12.5 13.847l-1.5 1.153l.532 -1.857l-1.532 -1.143h1.902l.598 -1.8l.598 1.8h1.902l-1.532 1.143l.532 1.857z" />
+                </svg>
+                <div>
+                    <p class="topic-header">Špeciálne návrhy</p>
+                    <p class="topic-content">Vždy sa snažíme, aby bol váš výber príjemnejší. Sledujte naše akcie a zľavy, aby bolo vaše nakupovanie ešte príjemnejšie.</p>
+                </div>
+            </li>
+            <li class="topic-element">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-list" width="44" height="44"
+                    viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M9 6l11 0" />
+                    <path d="M9 12l11 0" />
+                    <path d="M9 18l11 0" />
+                    <path d="M5 6l0 .01" />
+                    <path d="M5 12l0 .01" />
+                    <path d="M5 18l0 .01" />
+                </svg>
+                <div>
+                    <p class="topic-header">Objednať</p>
+                    <p class="topic-content">Zadanie objednávky v našom obchode je jednoduché a pohodlné. Nechajte svoje priania a my vám garantujeme, že každá kytica bude vytvorená s láskou a citom pre detail.</p>
+                </div>
+            </li>
+            <li class="topic-element">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-seeding" width="44"
+                    height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 10a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3" />
+                    <path d="M12 14a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3" />
+                    <path d="M12 20l0 -10" />
+                </svg>
+                <div>
+                    <p class="topic-header">Lilac</p>
+                    <p class="topic-content">- je miesto, kde sa každý moment kvetu stáva výnimočným. Nech je každý váš deň naplnený vôňami a krásou kvetov, ktoré vám prinesú radosť a pocit osláv. Darujte s nami krásu a radosť tým, ktorých máte radi.</p>
+                </div>
+            </li>
+        </ul>
+    </footer>
+    
+    <%- include("./partials/script.ejs") %>
+</body>
+
+</html>

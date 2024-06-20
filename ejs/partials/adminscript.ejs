@@ -1,0 +1,365 @@
+<script>
+    const { createApp } = Vue
+    $(".addFlower").submit(async (form) => {
+        form.preventDefault()
+        if ($(".imagename")[0].files.length > 4) {
+            alertify.error('File count must be <= 4')
+            return
+        }
+        filenames = []
+        for (let i = 0; i < $(".imagename")[0].files.length; i++) {
+            filenames.push("/images/flowers/" + $(".imagename")[0].files[i].name)
+        }
+
+        const data = {
+            name: $(".name").val(),
+            price: $(".price").val(),
+            img: filenames,
+            category: $(".category").val(),
+            sub_category: $(".sub-category").val(),
+            description: $(".description").val(),
+            saleprice: 0,
+        }
+
+        $.ajax({
+            url: '/uploadimage',
+            type: 'POST',
+            data: new FormData(document.querySelector('.addFlower')),
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                alertify.success('Files Uploaded!')
+            },
+            error: function() {
+                alertify.error('Error file uploading!')
+            }
+        });
+
+        const res = await fetch("api/db/addFlower", {
+            method: 'POST',
+            headers:
+            {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        await res.json().then((result) => {
+            alertify.success('Database Element Added!')
+        }, reason => {
+            console.log(reason)
+            alertify.error('Database Error Adding element!')
+        })
+
+       
+    })
+
+    createApp({
+        data() {
+            return {
+                flowers: [],
+            }
+        },
+        methods:
+        {
+        },
+        mounted() {
+            setInterval(async () => {
+                const data = {
+                }
+                const res = await fetch("api/db/getFlowers", {
+                    method: 'POST',
+                    headers:
+                    {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                await res.json().then((result) => {
+                    this.flowers = result
+                })
+            }, 1000)
+
+        }
+    }).mount('#main')
+
+
+
+    // createApp({
+    //     data() {
+    //         return {
+    //             orders: [],
+    //         }
+    //     },
+    //     methods:
+    //     {
+    //     },
+    //     async mounted() {
+    //         const data = {
+    //         }
+    //         const res = await fetch("api/db/getOrders", {
+    //             method: 'POST',
+    //             headers:
+    //             {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(data)
+    //         })
+    //         await res.json().then((result) => {
+    //             this.orders = result
+    //             console.log(this.orders)
+    //         })
+    //     }
+    // }).mount('#orders-wrapper')
+
+
+
+
+
+    $(document).ready(function () {
+        $(".orders-wrapper > *").html('<i class="fas fa-spinner fa-spin"></i>')
+        document.querySelectorAll(".categories-list ul").forEach((el) => {
+            $(".category").append(`<option>${el.className.split(" ")[0]}</option>`)
+        })
+        document.querySelectorAll(".categories-list ul > .list-items > li").forEach((el) => {
+            //${$(el).parent().parent().find('p').html()}-
+            $(".sub-category").append(`<option>${el.className.split(" ")[0]}</option>`)
+        })
+        $("html").on("click", ".main > ul > li > .delete", async function () {
+            event.preventDefault()
+            if (!confirm("Видалити елемент?")) return
+            const data = {
+                id: $(this).parent().attr('id'),
+            }
+            const res = await fetch("api/db/removeItem", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            let response = await res.status
+            await fetch("/removeimage", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    imagename: $(this).parent().find('img').attr("src")
+                })
+            }
+            )
+        })
+        // categories
+        $(".add-category").on("submit", async function () {
+            const c = $(".add-category input").val()
+            $(".categories-list").append(`<ul class="${c.replaceAll(" ", "_")} item-category"><p>${c}</p><div class="list-items"></div></ul>`)
+            await fetch("/setcategory", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category: $(".categories-list").html()
+                })
+            })
+        })
+
+        $(".categories-list > ul > p").on("dblclick", async function () {
+            if (!confirm(`Видалити категорію "${$(this).html()}"?`)) return
+            $(this).parent().remove()
+            await fetch("/setcategory", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category: $(".categories-list").html()
+                })
+            })
+        })
+        //sub-categories
+        $(".add-sub-category").on("submit", async function () {
+            const subc = $(".add-sub-category input").val()
+            const c = $(".add-sub-category .category").val()
+            $(`.${c}`).find(".list-items").append(`<li class="${subc.replaceAll(" ", "_")} item-subcategory"><a href="#${subc.replaceAll(" ", "_")}">${subc}</a></li>`)
+            await fetch("/setcategory", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category: $(".categories-list").html()
+                })
+            })
+
+        })
+
+        $(".categories-list > ul > div > li").on("dblclick", async function () {
+            if (!confirm(`Видалити під-категорію "${$(this).find("a").html()}"?`)) return
+            $(this).remove()
+            await fetch("/setcategory", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    category: $(".categories-list").html()
+                })
+            })
+
+        })
+
+
+        setInterval(() => {
+            $.post(`/api/db/getOrders`, {})
+                .always((response) => {
+                    if ($(window).width() < 767) showOrders(response, 'mobile')
+                    else showOrders(response, 'pc')
+                })
+        }, 2000)
+
+
+        $('html').on("click", ".button-accept-order", function () {
+            if (!confirm("Взяти замовлення в роботу?")) return
+            const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
+            const STATUS = 'inwork'
+            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+                .always((response) => {
+                    if (response) alertify.success("Замовлення прийняте!")
+                    else alertify.error("Помилка!")
+                })
+        })
+        $('html').on("click", ".button-cancel-order", function () {
+            if (!confirm("Відмінити замовлення?")) return
+            const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
+            const STATUS = 'cancelled'
+            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+                .always((response) => {
+                    if (response) alertify.success("Замовлення відмінене!")
+                    else alertify.error("Помилка!")
+                })
+        })
+        $('html').on("click", ".button-close-order", function () {
+            if (!confirm("Завершити замовлення?")) return
+            const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
+            const STATUS = 'done'
+            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+                .always((response) => {
+                    if (response) alertify.success("Замовлення завершене!")
+                    else alertify.error("Помилка!")
+                })
+        })
+        $('html').on("click", ".show-order-flowers", function () {
+            $(this).parent().find(".f").fadeToggle()
+        })
+    })
+
+
+    function showOrders(orderlist, device) {
+        $(".orders-wrapper > *").html("")
+        orderlist.forEach(order => {
+            const ordertime = order.ordertime
+            const date = ordertime[0]
+            const time = ordertime[1].split(".")[0]
+            const orderid = order.id
+            const orderdata = JSON.parse(order.orderdata)
+            const userdata = JSON.parse(order.userdata)[0]
+            const packing = Boolean(order.packing)
+            let orderflowers = ""
+            let cartprice = 0
+            orderdata.forEach(flower => {
+                cartprice += Number(flower.flowerPrice)
+                orderflowers += `
+                   <div class="f f${flower.flowerId}">
+                   <p class="admin-flower-order-name"><b>${flower.flowerName}</b></p>
+                   <p class="admin-flower-order-price">Загальна ціна: ${flower.flowerPrice}₴</p>
+                   <p class="admin-flower-order-name">Кількість: <b>${flower.flowerCount}</b> шт.</p>
+                   </div>
+                  `
+            })
+            if (device == 'mobile') {
+                const activeorderstatus = document.querySelector('input[name="order-select"]:checked').getAttribute('class')
+                if ("orders-list-" + order.status != activeorderstatus) return
+            }
+            $(`.orders-list-${order.status}`).append(`
+            <li class="order">
+                <div class="order-data">
+                    <p class="order-id">Замовлення #${orderid}</p>
+                    <p class="order-status-${order.status}">${order.status == "pending" ?
+                    "Нове замовлення🆕"
+                    : order.status == "inwork" ?
+                        "В роботі💼"
+                        : order.status == "done" ?
+                            "Завершене✅"
+                            : "Відмінене❌"
+                }</p>
+                    <p>📅${ordertime} </p>
+                    <p>Пакування: ${packing ? "✅" : "❌"}</p>
+                    <div>
+                        ${orderflowers}
+                        <p>Сума корзини: <b>${(Number(cartprice) + Number(packing ? 70 : 0)).toFixed(2)}</b>₴</p>
+                    </div>
+                </div>
+                <div class="user-data">
+                    <p class="user-name"> 👦: ${userdata.username}</p>
+                    <p class="user-number"> 📞: ${userdata.usernumber}</p>
+                    <p class="user-address">${userdata.useraddress ? "🏠: " + userdata.useraddress : ""}</p>
+                    <p class="user-pickup-time">${order.pickuptime != '/' ? "⏰: " + order.pickuptime : ""}</p>
+                </div>
+                <div class="order-nav-buttons">
+                    ${order.status == "pending" ?
+                    `<button class="button-accept-order">В роботу</button>
+                        <button class="button-cancel-order">Відмінити</button>`
+                    : order.status == "inwork" ?
+                        `<button class="button-close-order">Завершити</button>
+                        <button class="button-cancel-order">Відмінити</button>`
+                        : ""}
+                </div>
+            </li>
+            `)
+        })
+    }
+
+
+    $('html').on('click', '.set-sale-price', function () {
+        const SALEPRICE = prompt('Введіть повну ціну зі знижкою')
+        if (!SALEPRICE || Number(SALEPRICE) < 0) return
+        const FLOWERID = $(this).parent().attr("id")
+        $.post(`/api/db/setSalePrice`, { SALEPRICE, FLOWERID })
+            .always((response) => {
+                if (response) alertify.success("Знижку встановлено")
+                else alertify.error("Помилка!")
+            })
+    })
+
+
+
+
+
+
+
+
+    // PHONE ONLY
+    $(document).ready(function () {
+        if ($(window).width() < 767) {
+            $('.wrapp').prepend(
+                `
+                <div class="order-select-buttons">
+                    🆕<input type='radio' class='orders-list-pending' name='order-select' checked="checked">
+                    💼<input type='radio' class='orders-list-inwork' name='order-select'>
+                    ✅<input type='radio' class='orders-list-done' name='order-select'>
+                    ❌<input type='radio' class='orders-list-cancelled' name='order-select'>
+                </div>
+                `
+            )
+        }
+    })
+
+</script>

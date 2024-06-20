@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include("./partials/links.ejs") %>
+        <script src="https://unpkg.com/vue@3.2.47"></script>
+        <link href="/styles/adminstyle.css" rel="stylesheet">
+        <link href="/styles/phone-adminstyle.css" rel="stylesheet">
+        <title>Admin Nimfeya</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="wrapp">
+            <div class="orders-wrapper" id="orders-wrapper">
+                <ul class="orders-list-pending"></ul>
+                <ul class="orders-list-inwork"></ul>
+                <ul class="orders-list-done"></ul>
+                <ul class="orders-list-cancelled"></ul>
+            </div>
+        </div>
+        <!-- action="/uploadimage" method="post" -->
+        <form  enctype="multipart/form-data" class="addFlower">
+            <p class="form-header">Додати товар</p>
+            <p>Назва</p>
+            <input type="text" class="name" required> <br>
+            <p>Ціна (за од.)</p>
+            <input type="number" step="0.01" class="price" required><br>
+            <p>Категорія</p>
+            <select class="category"></select> <br>
+            <p>Під-Категорія</p>
+            <select class="sub-category"></select> <br>
+            <p>Опис</p>
+            <textarea class="description"></textarea> <br>
+            <p>Зображення</p>
+            <input type="file" name="formImage" class="imagename" multiple="multiple" accept="image/jpg, image/jpeg, image/png" required> <br>
+            <button>Завантажити</button>
+        </form>
+    </div>
+    <div class="main" id="main">
+        <ul>
+            <li v-for="flower in flowers" v-bind:id="flower.id">
+                <img v-bind:src="flower.image.split(',')[0]">
+                <p>Назва: {{flower.name}}</p>
+                <p>Ціна: ₴{{flower.price}}</p>
+                <p>Ціна зі знижкою: ₴{{flower.saleprice}}</p>
+                <p>Категорія: {{flower.category}}</p>
+                <button class="delete">Видалити</button>
+                <button class="set-sale-price">Встановити ціну зі знижкою</button>
+            </li>
+        </ul>
+    </div>
+    <div class="categories-wrapper">
+        <div class="category-wrapper">
+            <p>Нова Категорія</p>
+            <form class="add-category">
+                <input type="text">
+                <button>Додати</button>
+            </form>
+        </div>
+        <div class="subcategory-wrapper">
+            <p>Додати під-категорію</p>
+            <form class="add-sub-category">
+                <input type="text">
+                <p>до</p>
+                <select class="category"></select>
+                <button>Додати</button>
+            </form>
+        </div>
+        <ul class="categories-list">
+            <%- include("./partials/categories.ejs") %>
+        </ul>
+    </div>
+    <%- include("./partials/adminscript.ejs") %>
+</body>
+
+</html>

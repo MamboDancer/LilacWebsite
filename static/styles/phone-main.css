@@ -1,0 +1,452 @@
+@media screen and (max-width: 767px) {
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    :root {
+        touch-action: pan-x pan-y;
+        height: 100%
+    }
+
+    html,
+    body {
+        overflow-x: clip;
+    }
+
+    header {
+        height: 50vh;
+        width: 100vw;
+        position: relative;
+    }
+
+    corner {
+        display: grid;
+        grid-template-columns: repeat(2, 50vw);
+        grid-template-rows: 5fr 5fr 1fr 1fr 1fr 1fr 1fr;
+        width: 100%;
+        margin: 0;
+        grid-template-areas:
+            "a a"
+            "a a"
+            "a a"
+            "c c"
+            "c c"
+            "d d"
+            "cart cart";
+    }
+
+    corner .contacts .phone,
+    corner .addr p a {
+        font-size: 4vw;
+    }
+
+    corner .contacts {
+        grid-area: d;
+    }
+
+    corner .addr {
+        width: 100vw;
+        grid-area: c;
+    }
+
+    .cart-wrapper {
+        grid-area: cart;
+    }
+
+    .full-header {
+        width: 33vw;
+        height: 25vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        grid-area: a;
+    }
+
+    header .logo {
+        width: 80vw;
+        margin: 0;
+        margin-bottom: -15vw;
+        margin-top: -20vw;
+        padding: 0;
+    }
+
+    .full-header .text-header {
+        font-size: 10vw;
+    }
+
+    magname>p {
+        font-size: 3vw;
+    }
+
+    nav {
+        display: inline-flex;
+        width: 90%;
+        height: fit-content;
+        justify-self: center;
+        overflow-x: scroll;
+        overflow-y: visible;
+        gap: 3vw;
+        margin: -2%;
+    }
+
+    nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .cart-wrapper {
+        width: 15%;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 3vh;
+        float: right;
+    }
+
+    .cart-wrapper i {
+        font-size: 10vw;
+    }
+
+    .search-bar {
+        display: block;
+        float: left;
+        border-bottom: 0;
+        width: 100%;
+    }
+
+    #search-button {
+        font-size: 5vw;
+    }
+
+    .search-bar .search-input {
+        font-size: 5vw;
+        width: 80%;
+        text-align: center;
+        border-bottom: 2px solid #b7d9e1;
+    }
+
+    .search-bar:has(.search-input:focus) {
+        border: 0;
+        transition: 0;
+    }
+
+    .search-bar>#search-button:hover {
+        transition: 0;
+        transform: scale(1);
+    }
+
+    .cart-item-flower div {
+        display: grid;
+        place-items: center;
+    }
+
+    .cart-item-count {
+        background-color: red;
+        border-radius: 50%;
+        width: 7vw;
+        height: 7vw;
+        margin: 0 auto;
+        position: relative;
+        right: 8vw;
+        display: grid;
+        place-items: center;
+        vertical-align: middle;
+    }
+
+    .cart-items {
+        list-style: none;
+        height: auto;
+        max-height: 80vh;
+        width: 80vw;
+        overflow-y: scroll;
+        display: none;
+        place-items: center;
+        position: absolute;
+        top: 5vh;
+        left: -70vw;
+    }
+
+    .cart-items>* {
+        width: 70vw;
+        grid-template-columns: 1fr 2fr 1fr;
+        grid-template-rows: repeat(1, 1fr);
+        font-size: 3.3vw;
+        padding: 2%;
+        display: none;
+    }
+
+    .fl-qp {
+        pointer-events: none;
+    }
+
+    .flowers {
+        display: grid;
+        width: 80vw;
+        grid-template-rows: 1fr;
+        overflow-x: scroll;
+        overflow-y: hidden;
+    }
+
+    #main-list>ul {
+        width: 100%;
+    }
+
+    #main-list>ul>div>.fl .flower-main-image {
+        width: 100%;
+        height: 100%;
+    }
+
+    #main-list>ul>.flower-wrapper {
+        width: 100%;
+        height: 77%;
+        justify-content: flex-start;
+        gap: 10vw;
+    }
+
+    .navbar-icon {
+        width: 23vw;
+        height: 23vw;
+    }
+
+    nav>ul p {
+        font-size: 3vw;
+        border: 0;
+    }
+
+    nav>ul>.list-items {
+        width: 80%;
+        position: absolute;
+        left: 5vw;
+        top: 54vh;
+        padding: 1.2%;
+        border-bottom: 5px solid var(--main-color);
+        border-radius: 2vw;
+    }
+
+    nav>ul>.list-items>li>a {
+        font-size: 6vw;
+    }
+
+    #main-list>.list-header {
+        font-size: 10vw;
+        letter-spacing: 0.5px;
+    }
+
+    #main-list>ul>div>.fl .discount-image {
+        width: 100%;
+    }
+
+    #main-list>ul>div>.fl {
+        grid-template-rows: 60vw 23vw 10vw;
+        grid-template-columns: 60vw;
+        box-shadow: 0 0 1.2vw #ccc;
+        height: 100%;
+    }
+
+    .flower-info {
+        font-size: 5.3vw;
+    }
+
+    .buy-flower {
+        width: 35vw;
+        height: 8vw;
+        font-size: 5vw;
+        border-radius: 3vw;
+    }
+
+    #main-list {
+        width: 95vw;
+        margin-top: 10vw;
+    }
+
+    #main-list>.list-header {
+        margin-bottom: 8vw;
+    }
+
+    .cart-items .flower-image {
+        width: 70%;
+    }
+
+    .clcrt::before {
+        font-size: 70%;
+        font-weight: 900;
+        display: grid;
+        place-items: center;
+    }
+
+    .cart-order-button {
+        width: 90%;
+        height: 4vh;
+        display: grid;
+        place-items: center;
+        font-size: 4vw;
+        border-radius: 2vw;
+    }
+
+    .buy-modal,
+    .order-modal {
+        width: 90vw;
+        height: 50vh;
+        margin-top: -20vh;
+
+    }
+
+    .order-modal {
+        grid-template-rows: 0.6fr 4fr 2fr;
+        height: 85vh;
+    }
+
+    .order-modal .order-cart-items {
+        width: 90%;
+
+    }
+
+    .order-modal .header {
+        font-size: 6.7vw;
+    }
+
+    .user-order-info form {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        margin-top: 4%;
+        border-bottom: 0;
+    }
+
+    .user-order-info form>* {
+        width: 90%;
+        height: 1.2fr;
+        font-size: 5vw;
+        margin: 1.4% 0;
+    }
+
+    .user-order-info form button {
+        padding: 4%;
+    }
+
+    .user-order-info form .order-time {
+        height: 2fr;
+    }
+
+    .buy-modal {
+        height: 60vh;
+    }
+
+    .buy-modal .order-form {
+        width: 90%;
+        height: 95%;
+    }
+
+    .buy-modal .order-form .flower-name {
+        font-size: 7vw;
+    }
+
+    .buy-modal .order-form .flower-image {
+        width: 85%;
+    }
+
+    .buy-modal .order-form .flower-price {
+        font-size: 9vw;
+    }
+
+    .buy-modal .order-form .flower-count {
+        font-size: 7vw;
+    }
+
+    .buy-modal .order-form .to-cart-button {
+        font-size: 8vw;
+        border-radius: 2.5vw;
+        color: black;
+    }
+
+    #main-list>.list-header::after {
+
+        border: 0.3vw solid var(--sub-main-color);
+    }
+
+    footer {
+        box-shadow: 0;
+        width: 100%;
+        margin-top: 15vh;
+        background-color: var(--bgclr);
+
+    }
+
+    .footer-header {
+        text-align: center;
+        font-weight: 600;
+        font-size: 3vh;
+        letter-spacing: -1px;
+    }
+
+    footer .underline {
+        content: "";
+        width: 70%;
+        height: 0.2vh;
+        margin: 1% auto;
+        background-color: var(--main-color);
+    }
+
+    .footer-topics {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        
+        margin: 4vw;
+        margin-bottom: 0;
+    }
+
+    .topic-element {
+        display: grid;
+        grid-template-columns: 2fr 6fr;
+        margin: 3vh 1vw;
+        
+        font-size: 80%;
+    }
+
+    .topic-element svg {
+        width: 11vw;
+        height: 11vw;
+        justify-self: center;
+        align-self: center;
+        border: 3px solid var(--main-color);
+        border-radius: 50%;
+    }
+
+    .topic-element div {
+        height: 60%;
+        justify-self: center;
+        align-self: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    .topic-element .topic-header {
+        font-size: 140%;
+    }
+
+
+}
+
+@media screen and (max-height: 330px) {
+
+    .buy-modal img,
+    .order-modal img {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 400px) {
+
+    .buy-modal,
+    .order-modal {
+        width: 90vw;
+        height: 80vh;
+        margin: 0;
+        padding: 0;
+        margin-top: -10vh;
+    }
+}

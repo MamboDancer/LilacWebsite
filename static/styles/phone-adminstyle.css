@@ -1,0 +1,104 @@
+@media screen and (max-width: 767px) {
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .navbar {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        width: 80vw;
+    }
+
+    .navbar form>* {
+        margin: 3% 0;
+    }
+
+    .navbar form .form-header {
+        font-size: 8vw;
+    }
+
+    .navbar form p {
+        font-size: 6vw;
+    }
+
+    .navbar form input,
+    .sub-category-select {
+        font-size: 5vw;
+    }
+
+    .navbar form button,
+    .imagename {
+        font-size: 6vw;
+    }
+
+    .orders-wrapper {
+        margin: 0 auto;
+        width: 70vw;
+        height: 150vw;
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .order-select-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 80%;
+        font-size: 150%;
+        margin: 0 auto;
+    }
+
+    .categories-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%
+    }
+
+    .category-wrapper,
+    .subcategory-wrapper {
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 80%;
+        text-align: center;
+        font-size: 2vw;
+        border: 2px solid black;
+    }
+    .main ul{
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(auto-fit, minmax(30vh, 1fr));
+    }
+    .main ul li button{
+        font-size: 4vw;
+    }
+    .orders-wrapper .order button
+    {
+        font-size: 4vw;
+    }
+
+    .categories-wrapper
+    {
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        grid-template-rows: 10vh 15vh 30vh;
+    }
+    .categories-list
+    {
+        font-size: 6vw;
+        display: flex;
+        flex-direction: column;
+        margin-top: 50%;
+    }
+    .categories-list ul > p
+    {
+        font-size: 125%;
+    }
+    .category-wrapper, .subcategory-wrapper
+    {
+        font-size: 4vw;
+    }
+}
