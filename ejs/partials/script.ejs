@@ -1,12 +1,9 @@
 <script>
-    const { createApp } = Vue
-
     $.post(`/api/db/getFlowers`)
         .always((response) => {
             if (response) {
                 showFlowers(response)
                 addToSearch(response)
-
             }
             else alertify.error("Помилка серверу!")
         })
@@ -28,21 +25,18 @@
 
 
     function showFlowers(data) {
-        $("#main-list").html("")
-        let categories = []
+        let groups = []
         data.forEach((el) => {
-            if (!categories.includes(el.category)) categories.push(el.category)
+            if (!groups.includes(el.show_page)) groups.push(el.show_page)
         })
-        categories.forEach((cat) => {
-            // console.table(data)
-            $("#main-list").append(`<p class="list-header" id="${cat}">${cat}</p>`)
-            let ul = $(`<ul class="${cat} flowers swiper"></ul>`)
-            let flower_wrapper = $(`<div class="flower-wrapper swiper-wrapper"> </div>`)
+        groups.forEach((cat) => {
+            cat = cat.replaceAll(" ", "_")
             data.forEach((flower) => {
-                if (flower.category == cat) {
+                image = flower.image.split(",")
+                flower.show_page = flower.show_page.replaceAll(" ", "_")
+                if (flower.show_page == cat) {
                     let actualprice = `<p class="flower-price">₴${flower.price}</p>`
-                    let actualimg = `<img src="${flower.image}" class="flower-main-image">`
-
+                    let actualimg = `<img src="${image[0]}" class="flower-main-image">`
                     if (flower.saleprice > 0) {
                         const salepercent = (Number(flower.saleprice) * 100) / Number(flower.price)
                         let displayedsalepercent = `<div class="sale-banner">Знижка ${100 - salepercent.toFixed(0)}%</div>`
@@ -59,49 +53,52 @@
                             </div>
                         `
                     }
-                    let newel = $(flower_wrapper).append(`
-                    <div class="fl swiper-slide" flower-id="${flower.id}">
+                    let newel = `
+                    <div class="fl" flower-id="${flower.id}">
                         ${actualimg}
                         <div class="flower-info">
                             <p class="flower-name">${flower.name}</p>
                             ${actualprice}
                         </div>
                         <div class="buy-flower"><i class="fa fa-bag-shopping"></i><p class="buy-button-text">Objednať</p></div>
-                        </div>`)
-
+                        </div>`
+                    $(`.${cat}`).append(newel)
                 }
+
             })
-            $(ul).append(flower_wrapper)
-            $(ul).append(`<div class="swiper-pagination"></div>`)
-            $("#main-list").append(ul)
-            if (_SW < 767) {
-                $(".flower-wrapper").removeClass("swiper-wrapper")
-                $(".flowers").removeClass("swiper")
-                $(".fl").removeClass("swiper-slide")
-            }
-
         })
 
-        const raw_offset = (_SW * 100) / 1440
-        const offset = (215 * raw_offset) / 100
-        var swiper = new Swiper(".flowers", {
-            direction: "horizontal",
-            centeredSlides: false,
-            speed: 300,
-            initialSlide: -1,
-            slidesPerView: 4,
-            slidesPerGroup: 1,
-            freeMode: false,
-            slidesOffsetBefore: offset,
-            pagination: {
-                el: '.swiper-pagination',
-                type: 'bullets',
-            },
-        })
+        // const raw_offset = (_SW * 100) / 1440
+        // const offset = (215 * raw_offset) / 100
+        // var swiper = new Swiper(".flowers", {
+        //     direction: "horizontal",
+        //     centeredSlides: false,
+        //     speed: 300,
+        //     initialSlide: -1,
+        //     slidesPerView: 4,
+        //     slidesPerGroup: 1,
+        //     freeMode: false,
+        //     slidesOffsetBefore: offset,
+        //     pagination: {
+        //         el: '.swiper-pagination',
+        //         type: 'bullets',
+        //     },
+        // })
 
 
         $('.sale-banner').css('width', $('.sale-banner').parent().find('img').width())
         // $('.sale-banner').css('bottom',$('.flower-info').height() +$('.buy-flower').height() )
+
+        let flower_names = $(".flower-info .flower-name")
+        for (let i = 0; i < flower_names.length; i++) {
+            let fs = $(flower_names).eq(i).css("font-size")
+            if ($(flower_names).eq(i).html().length >= 27)
+                $(flower_names).eq(i).css("font-size", `${fs.split("px")[0] * 0.8}px`)
+        }
+
+        for (let i = 0; i < $(".group-header").length; i++) {
+            if($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
+        }
     }
 
 
@@ -399,6 +396,13 @@
 
         }
 
+        $('.item-category').on('click touchstart', function () {
+            $(this).find(".list-items").toggleClass('dropdown-menu-open');
+            if ($(this).find(".list-items").is(".dropdown-menu-open")) $(this).find("arrow").html("⯅")
+            else $(this).find("arrow").html("⯆")
+        })
+
+
 
     })
     $(".pickup").change(function () {
@@ -419,7 +423,7 @@
     }
 
     function parseCart(cart, userData) {
-        
+
         var price = 0
         var parsedCart = `*Нове замовлення: *
                             %0A${getTimeNow()}`
@@ -458,7 +462,7 @@
         const CURRENTTIME = getTimeNow()
         const ORDERTIME = `${userData.usertime}/${userData.userdate}`
         const PACKING = userData.packing
-        $.post(`/api/db/createOrder`, { CART, UD, CURRENTTIME, ORDERTIME, PACKING})
+        $.post(`/api/db/createOrder`, { CART, UD, CURRENTTIME, ORDERTIME, PACKING })
             .always(function (dbstatus) {
                 if (dbstatus) dbResponce = true
                 $.post(`/sendorder`, { cart })
@@ -551,8 +555,7 @@
             $(".cart-item-count").html(count)
             if (_SW <= 767) $(".cart-items").prepend("<p class='close-cart'><i class='clcrt fa fa-x'></i></p>")
         }
-        catch
-        {
+        catch {
             $(".cart-item-count").css("opacity", "0")
         }
 

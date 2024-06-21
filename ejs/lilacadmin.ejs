@@ -20,7 +20,7 @@
             </div>
         </div>
         <!-- action="/uploadimage" method="post" -->
-        <form  enctype="multipart/form-data" class="addFlower">
+        <form enctype="multipart/form-data" class="addFlower">
             <p class="form-header">Додати товар</p>
             <p>Назва</p>
             <input type="text" class="name" required> <br>
@@ -33,28 +33,19 @@
             <p>Опис</p>
             <textarea class="description"></textarea> <br>
             <p>Зображення</p>
-            <input type="file" name="formImage" class="imagename" multiple="multiple" accept="image/jpg, image/jpeg, image/png" required> <br>
+            <input type="file" name="formImage" class="imagename" multiple="multiple"
+                accept="image/jpg, image/jpeg, image/png" required> <br>
             <button>Завантажити</button>
         </form>
     </div>
     <div class="main" id="main">
-        <ul>
-            <li v-for="flower in flowers" v-bind:id="flower.id">
-                <img v-bind:src="flower.image.split(',')[0]">
-                <p>Назва: {{flower.name}}</p>
-                <p>Ціна: ₴{{flower.price}}</p>
-                <p>Ціна зі знижкою: ₴{{flower.saleprice}}</p>
-                <p>Категорія: {{flower.category}}</p>
-                <button class="delete">Видалити</button>
-                <button class="set-sale-price">Встановити ціну зі знижкою</button>
-            </li>
-        </ul>
+        <ul></ul>
     </div>
     <div class="categories-wrapper">
         <div class="category-wrapper">
             <p>Нова Категорія</p>
             <form class="add-category">
-                <input type="text">
+                <input type="text"><br>
                 <button>Додати</button>
             </form>
         </div>
@@ -67,10 +58,22 @@
                 <button>Додати</button>
             </form>
         </div>
-        <ul class="categories-list">
-            <%- include("./partials/categories.ejs") %>
-        </ul>
+
     </div>
+    <ul class="categories-list">
+        <%- include("./partials/categories.ejs") %>
+    </ul>
+    <div class="groups-wrapper">
+        <p>Нова група</p>
+        <form class="add-group">
+            <input type="text"> <br>
+            <button>Додати</button>
+        </form>
+    </div>
+
+    <ul class="groups-list">
+        <%- include("./partials/groups.ejs") %>
+    </ul>
     <%- include("./partials/adminscript.ejs") %>
 </body>
 

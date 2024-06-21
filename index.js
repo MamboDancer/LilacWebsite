@@ -11,12 +11,21 @@ const app = express()
 const __dirname = path.resolve()
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.resolve(__dirname, 'static', 'images','flowers'))
+        let folder = path.resolve(__dirname, 'static', 'images', 'flowers')
+        try {
+            if (!fs.existsSync(folder)) {
+                fs.mkdirSync(folder);
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+        cb(null, folder)
     },
     filename: function (req, file, cb) {
-      cb(null, "" + file.originalname)
+        cb(null, "" + file.originalname)
     }
-  })
+})
 var upload = multer({ storage: storage }).any('formImage')
 
 
@@ -52,11 +61,11 @@ app.listen(PORT, () => {
 })
 
 app.post('/uploadimage', function (req, res) {
-    upload(req, res, merr =>{
-        if(merr) res.send(false)
+    upload(req, res, merr => {
+        if (merr) res.send(false)
         res.send(true)
     })
-  })
+})
 
 app.post('/removeimage', async (req, res, next) => {
     const directory = path.resolve(__dirname, "static")
@@ -69,22 +78,37 @@ app.post('/setcategory', async (req, res, next) => {
     const cat = req.body.category
     const filepath = path.resolve(__dirname, "ejs", "partials", "categories.ejs")
     fs.readFile(filepath, "utf-8", (err, data) => {
-        if (err) console.log(err)
+        if (err) res.send(false)
         else {
             fs.writeFile(filepath, cat, err => {
-                if (err) console.log(err)
+                if (err) res.send(false)
             })
         }
     })
+    res.send(true)
 })
 
 app.post('/sendorder', (req, res) => {
     const cart = req.body.cart
     const token = "6511960747:AAEXEmpt_0pNlbqLW9CTdeJ5GfsY-InM2SA"
     const chat_id = -4096041703
-    https.get(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&parse_mode=markdown&text=${cart}`, (responce)=>{
-        if(responce.statusCode == 200) res.send(true)
+    https.get(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&parse_mode=markdown&text=${cart}`, (responce) => {
+        if (responce.statusCode == 200) res.send(true)
         else res.send(false)
     })
 
+})
+
+app.post('/addgroup', async (req, res, next) => {
+    const group = req.body.group
+    const filepath = path.resolve(__dirname, "ejs", "partials", "groups.ejs")
+    fs.readFile(filepath, "utf-8", (err, data) => {
+        if (err) res.send(false)
+        else {
+            fs.writeFile(filepath, group, err => {
+                if (err) res.send(false)
+            })
+        }
+    })
+    res.send(true)
 })

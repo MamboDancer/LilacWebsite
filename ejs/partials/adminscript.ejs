@@ -28,10 +28,10 @@
             cache: false,
             contentType: false,
             processData: false,
-            success: function(data){
+            success: function (data) {
                 alertify.success('Files Uploaded!')
             },
-            error: function() {
+            error: function () {
                 alertify.error('Error file uploading!')
             }
         });
@@ -51,37 +51,37 @@
             alertify.error('Database Error Adding element!')
         })
 
-       
+
     })
 
-    createApp({
-        data() {
-            return {
-                flowers: [],
-            }
-        },
-        methods:
-        {
-        },
-        mounted() {
-            setInterval(async () => {
-                const data = {
-                }
-                const res = await fetch("api/db/getFlowers", {
-                    method: 'POST',
-                    headers:
-                    {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                await res.json().then((result) => {
-                    this.flowers = result
-                })
-            }, 1000)
+    // createApp({
+    //     data() {
+    //         return {
+    //             flowers: [],
+    //         }
+    //     },
+    //     methods:
+    //     {
+    //     },
+    //     mounted() {
+    //         setInterval(async () => {
+    //             const data = {
+    //             }
+    //             const res = await fetch("api/db/getFlowers", {
+    //                 method: 'POST',
+    //                 headers:
+    //                 {
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify(data)
+    //             })
+    //             await res.json().then(async (result) => {
+    //                 this.flowers = await result
+    //             })
+    //         }, 2000)
 
-        }
-    }).mount('#main')
+    //     }
+    // }).mount('#main')
 
 
 
@@ -117,6 +117,46 @@
 
 
     $(document).ready(function () {
+
+        fetch("api/db/getFlowers", {
+            method: 'POST',
+            headers:
+            {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+            .then(async (result) => {
+                flowers = await result.json()
+                flowers.forEach(flower => {
+                    $(".main > ul").append(`
+                    <li id="${flower.id}">
+                        <img src="${flower.image.split(',')[0]}">
+                        <p>Назва: ${flower.name}</p>
+                        <p>Ціна: ${flower.price}</p>
+                        <p>Ціна зі знижкою: ${flower.saleprice}</p>
+                        <p>Категорія: ${flower.category}</p>
+                        <p>Під-Категорія: ${flower.sub_category}</p>
+                        <p>Група: ${flower.show_page}</p>
+                        <button class="delete">Видалити</button>
+                        <button class="set-sale-price">Встановити ціну зі знижкою</button>
+                        <div>
+                            <select class="item-group-select">
+                                <option>Немає</option>
+                            </select>
+                            <button class="apply-item-group">Встановити групу</button>
+                        </div>
+                    </li>
+                `)
+                })
+                groups = "<option>Немає</option>"
+                for (let i = 0; i < $("group").length; i++) {
+                    groups += `<option>${$("group").eq(i).html()}</option>`
+                }
+                $(".item-group-select").html(groups)
+            })
+
+
         $(".orders-wrapper > *").html('<i class="fas fa-spinner fa-spin"></i>')
         document.querySelectorAll(".categories-list ul").forEach((el) => {
             $(".category").append(`<option>${el.className.split(" ")[0]}</option>`)
@@ -155,7 +195,7 @@
         // categories
         $(".add-category").on("submit", async function () {
             const c = $(".add-category input").val()
-            $(".categories-list").append(`<ul class="${c.replaceAll(" ", "_")} item-category"><p>${c}</p><div class="list-items"></div></ul>`)
+            $(".categories-list").append(`<ul class="${c.replaceAll(" ", "_")} item-category"><p>${c}<arrow>⯆</arrow></p><div class="list-items"></div></ul>`)
             await fetch("/setcategory", {
                 method: 'POST',
                 headers:
@@ -183,7 +223,8 @@
             })
         })
         //sub-categories
-        $(".add-sub-category").on("submit", async function () {
+        $(".add-sub-category").on("submit", async function (f) {
+            // f.preventDefault() //
             const subc = $(".add-sub-category input").val()
             const c = $(".add-sub-category .category").val()
             $(`.${c}`).find(".list-items").append(`<li class="${subc.replaceAll(" ", "_")} item-subcategory"><a href="#${subc.replaceAll(" ", "_")}">${subc}</a></li>`)
@@ -216,6 +257,50 @@
 
         })
 
+        $(".groups-wrapper").on("submit", async function (f) {
+            f.preventDefault()
+            let group_class = $(".groups-wrapper input").val().replaceAll(" ", "_")
+            let group_name = $(".groups-wrapper input").val()
+            console.log(group_name)
+            $(".groups-list").append(`
+                <group class="group-header">
+                    <p>${group_name}</p>
+                    <div class="group ${group_class}"></div>
+                </group>`)
+            await fetch("/addgroup", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    group: $(".groups-list").html()
+                })
+            })
+                .then(async (response) => {
+                    if (response.status == 200) alertify.success("Нову групу створено")
+                    else alertify.error("Помилка серверу")
+                })
+        })
+
+        $("group").on("dblclick", async function () {
+            if (!confirm(`Видалити групу "${$(this).find("p").html()}"?`)) return
+            $(this).remove()
+            await fetch("/addgroup", {
+                method: 'POST',
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    group: $(".groups-list").html()
+                })
+            })
+                .then(async (response) => {
+                    if (response.status == 200) alertify.success("Групу видалено!")
+                    else alertify.error("Помилка серверу")
+                })
+        })
 
         setInterval(() => {
             $.post(`/api/db/getOrders`, {})
@@ -259,6 +344,18 @@
         $('html').on("click", ".show-order-flowers", function () {
             $(this).parent().find(".f").fadeToggle()
         })
+
+
+        $("html").on("click", ".apply-item-group", function () {
+            const id = $(this).parent().parent().attr('id')
+            const group = $(this).parent().find("select").val()
+            $.post(`/api/db/setFlowerGroup`, { id, group })
+                .always((response) => {
+                    if (response) alertify.success("Група змінена!")
+                    else alertify.error("Помилка!")
+                })
+        })
+
     })
 
 
@@ -338,12 +435,6 @@
                 else alertify.error("Помилка!")
             })
     })
-
-
-
-
-
-
 
 
     // PHONE ONLY

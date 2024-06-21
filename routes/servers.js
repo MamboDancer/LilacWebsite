@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { getFlowers, addFlower, removeItem, getOrders, createOrder, updateOrderStatus, setSalePrice } from '../mysql/mysql.cjs'
+import { getFlowers, addFlower, removeItem, getOrders, createOrder, updateOrderStatus, setSalePrice, setFlowerGroup } from '../mysql/mysql.cjs'
 
 
 const router = Router()
@@ -11,4 +11,5 @@ router.post('/api/db/getOrders', getOrders)
 router.post('/api/db/createOrder', createOrder)
 router.post('/api/db/updateOrderStatus', updateOrderStatus)
 router.post('/api/db/setSalePrice', setSalePrice)
+router.post('/api/db/setFlowerGroup', setFlowerGroup)
 export default router

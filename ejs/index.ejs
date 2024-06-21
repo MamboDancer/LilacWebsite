@@ -16,27 +16,16 @@
     <header>
         <corner>
             <div class="full-header">
-                <img class="sub-image" title="sub-logo" src="./images/const/F4.png">
                 <img class="logo" title="logo" src="./images/const/LilacLogo.png">
             </div>
             <div class="contacts">
-                <div class="phone"><a href="tel:+380671892177">+PHONENUMBER</a></div>
+                <div class="phone"><a href="tel:+421948482323">+421 948 482 323</a></div>
                 <div class="addr">
-                    <p><a href="https://maps.app.goo.gl/bzQwa6B78rbMwvnq8" target="_blank">ADDRESS</a>
+                    <p><a href="https://maps.app.goo.gl/zpVjX7GjKbiwKMjM6" target="_blank">Banská Bystrica, ul. 29 augusta 25</a>
                     </p>
                 </div>
             </div>
-            
-            <div class="cart-wrapper">
-                <div class="cart">
-                    <i class="fa fa-shopping-cart cart-icon"></i>
-                    <div class="cart-item-count"></div>
-                </div>
-                <ul class="cart-items">
-                </ul>
-            </div>
-        </corner>
-        <nav>
+            <nav>
                 <div id="search">
                     <div class="search-bar">
                         <input type="text" placeholder="Hľadanie" class="search-input">
@@ -48,12 +37,24 @@
                     </ul>
                 </div>
         </nav>
+            <div class="cart-wrapper">
+                <div class="cart">
+                    <i class="fa fa-shopping-cart cart-icon"></i>
+                    <div class="cart-item-count"></div>
+                </div>
+                <ul class="cart-items">
+                </ul>
+            </div>
+        </corner>
+        
     </header>
     <div class="main-block">
         <div class="main-categories">
             <%- include("./partials/categories.ejs") %>
         </div>
-        <div class="fp-items"></div>
+        <div class="fp-items">
+            <%- include("./partials/groups.ejs") %>
+        </div>
     </div>
     <div class="buy-modal-wrapper">
         <div class="buy-modal">

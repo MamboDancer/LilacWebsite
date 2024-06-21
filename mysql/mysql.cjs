@@ -2,6 +2,7 @@ var sql = require('mysql')
 
 var conn
 
+var charset = "utf8"
 conn = sql.createConnection(
     {
         host: 'kyiv1.mineconnect.xyz',
@@ -16,13 +17,14 @@ conn.connect((err) => {
         console.log(`Connected to db`)
         conn.query(`CREATE TABLE IF NOT EXISTS flowers(
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
+                name VARCHAR(255) CHARACTER SET ${charset},
                 price DOUBLE,
-                image VARCHAR(255),
-                category VARCHAR(255),
-                sub_category VARCHAR(255),
+                image VARCHAR(255) CHARACTER SET ${charset},
+                category VARCHAR(255) CHARACTER SET ${charset},
+                sub_category VARCHAR(255) CHARACTER SET ${charset},
                 saleprice DOUBLE,
-                description LONGTEXT
+                description LONGTEXT CHARACTER SET ${charset},
+                show_page VARCHAR(255) CHARACTER SET ${charset} DEFAULT "none" 
             )`, (err, res) => {
             if (err) console.log(err)
             else
@@ -30,11 +32,11 @@ conn.connect((err) => {
         })
         conn.query(`CREATE TABLE IF NOT EXISTS orders(
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                userdata LONGTEXT,
-                orderdata LONGTEXT,
-                status VARCHAR(255),
-                ordertime VARCHAR(255),
-                pickuptime VARCHAR(255)
+                userdata LONGTEXT CHARACTER SET ${charset},
+                orderdata LONGTEXT CHARACTER SET ${charset},
+                status VARCHAR(255) CHARACTER SET ${charset},
+                ordertime VARCHAR(255) CHARACTER SET ${charset},
+                pickuptime VARCHAR(255) CHARACTER SET ${charset}
             )`, (err, res) => {
             if (err) console.log(err)
             else
@@ -62,10 +64,26 @@ addFlower = (req, res) => {
     conn.query(`INSERT INTO flowers (name, price, image, category, sub_category, description, saleprice) 
                 VALUES ("${name}", "${price}", "${img}", "${category}", "${sub_category}", "${description}", "${saleprice}") `,
         (err, ress, f) => {
-            if (err) res.status(500).json(ress)
+            if (err) {
+                res.status(500).json(ress)
+                console.log(err)
+            }
             else return res.status(200).json(ress)
         })
 }
+
+setFlowerGroup = (req, res) => {
+    let group = req.body.group
+    let id = req.body.id
+    conn.query(`UPDATE flowers
+        SET show_page = '${group}'
+        WHERE id = '${id}'`, (err, ress, f) => {
+        if (err) return res.send(false)
+        else return res.send(true)
+    })
+}
+
+
 
 setSalePrice = (req, res) => {
     conn.query(`UPDATE flowers
@@ -118,3 +136,4 @@ exports.getOrders = getOrders
 exports.createOrder = createOrder
 exports.updateOrderStatus = updateOrderStatus
 exports.setSalePrice = setSalePrice
+exports.setFlowerGroup = setFlowerGroup
