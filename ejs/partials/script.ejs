@@ -1,7 +1,9 @@
 <script>
+    let all_flowers
     $.post(`/api/db/getFlowers`)
         .always((response) => {
             if (response) {
+                all_flowers = response
                 showFlowers(response)
                 addToSearch(response)
             }
@@ -33,22 +35,23 @@
             cat = cat.replaceAll(" ", "_")
             data.forEach((flower) => {
                 image = flower.image.split(",")
+                console.log(image)
                 flower.show_page = flower.show_page.replaceAll(" ", "_")
                 if (flower.show_page == cat) {
-                    let actualprice = `<p class="flower-price">₴${flower.price}</p>`
+                    let actualprice = `<p class="flower-price">€${flower.price}</p>`
                     let actualimg = `<img src="${image[0]}" class="flower-main-image">`
                     if (flower.saleprice > 0) {
                         const salepercent = (Number(flower.saleprice) * 100) / Number(flower.price)
-                        let displayedsalepercent = `<div class="sale-banner">Знижка ${100 - salepercent.toFixed(0)}%</div>`
+                        let displayedsalepercent = `<div class="sale-banner">Zľava ${100 - salepercent.toFixed(0)}%</div>`
                         if (_SW < 767) displayedsalepercent = ""
                         actualprice = `<div class="discount-price">
-                            <p class="flower-price">₴${flower.saleprice}</p>
-                            <p class="flower-old-price">₴${flower.price}</p>
+                            <p class="flower-price">€${flower.saleprice}</p>
+                            <p class="flower-old-price">€${flower.price}</p>
                         </div>`
 
                         actualimg = `
                             <div class="discount-image">
-                                <img src="${flower.image}" class="flower-main-image">
+                                <img src="${image[0]}" class="flower-main-image">
                                 ${displayedsalepercent}
                             </div>
                         `
@@ -97,7 +100,7 @@
         }
 
         for (let i = 0; i < $(".group-header").length; i++) {
-            if($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
+            if ($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
         }
     }
 
@@ -185,7 +188,7 @@
             showBuyModal(flowerid)
         })
 
-        $("html").on("click", ".flower-wrapper .buy-flower", function () {
+        $("html").on("click", ".buy-flower", function () {
             const flowerid = $(this).parent().attr("flower-id")
             EDIT = false
             showBuyModal(flowerid)
@@ -206,13 +209,13 @@
             if (!$(this).val()) {
                 let last_price = price
                 if (Number.isInteger(price)) last_price = last_price.toFixed(0)
-                $(priceEl).html(`₴${(last_price).toFixed(2)}`)
+                $(priceEl).html(`€${(last_price).toFixed(2)}`)
                 return
             }
             $(this).css("width", `${15 + $(this).val().length * 8}%`)
             let last_price = Number(Number(price * Number($(this).val())).toFixed(2))
             if (Number.isInteger(last_price)) last_price = last_price.toFixed(0)
-            $(priceEl).html(`₴${last_price}`)
+            $(priceEl).html(`€${last_price}`)
         })
         $(".buy-modal-wrapper, .order-modal-wrapper").on("click", function () {
             $(this).css("display", "none")
@@ -228,7 +231,7 @@
                 const parent = $(this).parent().parent()
                 const name = $(parent).find(".flower-name").html()
                 const id = $(parent).find(".flower-name").attr("flower-id")
-                const price = $(parent).find(".flower-price").html().split("₴")[1]
+                const price = $(parent).find(".flower-price").html().split("€")[1]
                 const img = $(parent).find(".flower-image").attr("src")
                 const count = $(parent).find(".flower-count").val()
                 const el = {
@@ -342,7 +345,7 @@
                         <img src="${cartItem.flowerImage}" class="flower-image">
                         <p>${cartItem.flowerName}</p>
                         <div class="fl-qp">
-                            <p>₴${cartItem.flowerPrice}</p>
+                            <p>€${cartItem.flowerPrice}</p>
                             <p>К-ть: ${cartItem.flowerCount}</p>
                         </div>
                     </li>
@@ -433,14 +436,14 @@
             %0A№${++count}
             %0A*Товар*: ${el.flowerName} 
             %0A*Кількість*: ${el.flowerCount} шт
-            %0A*Ціна*: ${el.flowerPrice} ₴
+            %0A*Ціна*: ${el.flowerPrice} €
             %0A---%0A
             `
             price += el.flowerPrice
         })
         userData.packing ? price += 70 : false
         parsedCart += `%0A*Пакування : * ${userData.packing ? "ТАК" : "НІ"}`
-        parsedCart += `%0AЗагальна ціна корзини : ${price} ₴`
+        parsedCart += `%0AЗагальна ціна корзини : ${price} €`
         parsedCart += `
             %0A
             %0A%0A*Покупець : *
@@ -527,7 +530,7 @@
                         <p>${cartItem.flowerName}</p>
                         <div>
                             <div class="fl-qp">
-                                <p>₴${cartItem.flowerPrice}</p>
+                                <p>€${cartItem.flowerPrice}</p>
                                 <p>К-ть: ${cartItem.flowerCount}</p>
                             </div>
                             <div class="edit-order-buttons">
@@ -625,8 +628,23 @@
             flowerName: $(parent).find(".flower-name").html(),
             flowerImage: $(parent).find("img").attr("src"),
             flowerPrice: $(parent).find(".flower-price").html(),
-            flowerId: id
+            flowerId: id,
+            flowerDescription: ""
         }
+        $(".flower-image-carousel").html("")
+        all_flowers.forEach(flower => {
+            if (flower.id == id) {
+                flowerData.flowerDescription = flower.description
+                let i = 0
+                flower.image.split(",").forEach(flower_image => {
+                    if(i == 0)  $(".flower-image-carousel").append(`<img src="${flower_image}" class="flower-image-modal"/>`)
+                    i++
+                    console.log(flower_image)
+                    $(".flower-image-carousel").append(`<img src="${flower_image}" class="flower-image-modal"/>`)
+                })
+                return
+            }
+        })
         let form = $(".buy-modal-wrapper .order-form")
         $(form).find(".flower-name").html(flowerData.flowerName)
         $(form).find(".flower-name").attr("flower-id", flowerData.flowerId)
@@ -634,8 +652,9 @@
         if ($(parent).find(".flower-old-price").html()) $(form).find(".flower-price").css('color', 'red')
         else $(form).find(".flower-price").css('color', 'black')
         $(form).find(".flower-price").html(flowerData.flowerPrice)
-        $(form).find(".flower-price").attr("price", flowerData.flowerPrice.split("₴")[1])
+        $(form).find(".flower-price").attr("price", flowerData.flowerPrice.split("€")[1])
         $(form).find("input").val(1)
+        $(form).find(".flower-description").html(flowerData.flowerDescription)
     }
 
 
