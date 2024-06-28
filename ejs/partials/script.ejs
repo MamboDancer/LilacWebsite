@@ -1,5 +1,6 @@
 <script>
     let all_flowers
+    let active_class = "group-header"
     $.post(`/api/db/getFlowers`)
         .always((response) => {
             if (response) {
@@ -10,7 +11,10 @@
             else alertify.error("Помилка серверу!")
         })
 
-
+    function logoShowFlowers() {
+        active_class = "group-header"
+        showActiveFlowers()
+    }
 
     function addToSearch(data) {
         $(".search-list").html("")
@@ -21,43 +25,28 @@
                 </li>`
             $(".search-list").append(newElement)
         })
-
     }
     //search
-
-
-    function showFlowers(data) {
-        let groups = []
-        data.forEach((el) => {
-            if (!groups.includes(el.show_page)) groups.push(el.show_page)
-        })
-        groups.forEach((cat) => {
-            cat = cat.replaceAll(" ", "_")
-            data.forEach((flower) => {
-                image = flower.image.split(",")
-                console.log(image)
-                flower.show_page = flower.show_page.replaceAll(" ", "_")
-                if (flower.show_page == cat) {
-                    let actualprice = `<p class="flower-price">€${flower.price}</p>`
-                    let actualimg = `<img src="${image[0]}" class="flower-main-image">`
-                    if (flower.saleprice > 0) {
-                        const salepercent = (Number(flower.saleprice) * 100) / Number(flower.price)
-                        let displayedsalepercent = `<div class="sale-banner">Zľava ${100 - salepercent.toFixed(0)}%</div>`
-                        if (_SW < 767) displayedsalepercent = ""
-                        actualprice = `<div class="discount-price">
+    function createItem(flower, image, category = null) {
+        let actualprice = `<p class="flower-price">€${flower.price}</p>`
+        let actualimg = `<img src="${image[0]}" class="flower-main-image">`
+        if (flower.saleprice > 0) {
+            const salepercent = (Number(flower.saleprice) * 100) / Number(flower.price)
+            let displayedsalepercent = `<div class="sale-banner">Zľava ${100 - salepercent.toFixed(0)}%</div>`
+            if (_SW < 767) displayedsalepercent = ""
+            actualprice = `<div class="discount-price">
                             <p class="flower-price">€${flower.saleprice}</p>
                             <p class="flower-old-price">€${flower.price}</p>
                         </div>`
-
-                        actualimg = `
+            actualimg = `
                             <div class="discount-image">
                                 <img src="${image[0]}" class="flower-main-image">
                                 ${displayedsalepercent}
                             </div>
                         `
-                    }
-                    let newel = `
-                    <div class="fl" flower-id="${flower.id}">
+        }
+        return `
+                    <div class="fl ${category ? "sub-fl" : ""}" flower-id="${flower.id}" ${category ? "sub-category='" + category + "'" : ""}>
                         ${actualimg}
                         <div class="flower-info">
                             <p class="flower-name">${flower.name}</p>
@@ -65,48 +54,66 @@
                         </div>
                         <div class="buy-flower"><i class="fa fa-bag-shopping"></i><p class="buy-button-text">Objednať</p></div>
                         </div>`
-                    $(`.${cat}`).append(newel)
-                }
+    }
 
+    function showFlowers(data) {
+        $(".group").html("")
+        let groups = []
+        let sub_categories = []
+        data.forEach((el) => {
+            if (!groups.includes(el.show_page)) groups.push(el.show_page)
+            if (!sub_categories.includes(el.sub_category)) sub_categories.push(el.sub_category)
+        })
+        groups.forEach((cat) => {
+            cat = cat.replaceAll(" ", "_")
+            data.forEach((flower) => {
+                image = flower.image.split(",")
+                flower.show_page = flower.show_page.replaceAll(" ", "_")
+                if (flower.show_page == cat) {
+                    $(`.${cat}`).append(createItem(flower, image))
+                }
             })
         })
 
-        // const raw_offset = (_SW * 100) / 1440
-        // const offset = (215 * raw_offset) / 100
-        // var swiper = new Swiper(".flowers", {
-        //     direction: "horizontal",
-        //     centeredSlides: false,
-        //     speed: 300,
-        //     initialSlide: -1,
-        //     slidesPerView: 4,
-        //     slidesPerGroup: 1,
-        //     freeMode: false,
-        //     slidesOffsetBefore: offset,
-        //     pagination: {
-        //         el: '.swiper-pagination',
-        //         type: 'bullets',
-        //     },
-        // })
-
+        data.forEach((flower) => {
+            console.log(flower)
+            image = flower.image.split(",")
+            flower.sub_category = flower.sub_category.replaceAll(" ", "_")
+            let item = createItem(flower, image, flower.sub_category)
+            $(`.fp-items`).append(item)
+        })
 
         $('.sale-banner').css('width', $('.sale-banner').parent().find('img').width())
-        // $('.sale-banner').css('bottom',$('.flower-info').height() +$('.buy-flower').height() )
-
         let flower_names = $(".flower-info .flower-name")
         for (let i = 0; i < flower_names.length; i++) {
             let fs = $(flower_names).eq(i).css("font-size")
             if ($(flower_names).eq(i).html().length >= 27)
                 $(flower_names).eq(i).css("font-size", `${fs.split("px")[0] * 0.8}px`)
         }
-
         for (let i = 0; i < $(".group-header").length; i++) {
             if ($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
         }
+        showActiveFlowers()
     }
 
+    function showActiveFlowers() {
+        if (active_class == "group-header") {
+            $(".sub-fl").addClass("deactivated")
+            $(".group-header").removeClass("deactivated")
+            $(".fp-items").removeClass("active-grid")
+        }
+        else {
+            $(".group-header").addClass("deactivated")
+            $(".fp-items").addClass("active-grid")
+        }
 
-
-
+        
+        for(let i = 0; i < $(".sub-fl").length; i++)
+        {
+            if($(".sub-fl").eq(i).attr("sub-category") == active_class) $(".sub-fl").eq(i).removeClass("deactivated")
+            else $(".sub-fl").eq(i).addClass("deactivated")
+        }
+    }
 
     var FLOWERNAME = ""
     var EDIT = false
@@ -352,7 +359,7 @@
                         <p>${cartItem.flowerName}</p>
                         <div class="fl-qp">
                             <p>€${cartItem.flowerPrice}</p>
-                            <p>К-ть: ${cartItem.flowerCount}</p>
+                            <p>číslo: ${cartItem.flowerCount}</p>
                         </div>
                     </li>
                 `)
@@ -411,22 +418,21 @@
             else $(this).find("arrow").html("⯆")
         })
 
+        $(".item-subcategory").on("click", function () {
+            const active_category = $(this).attr('class').split(" ")[0]
+            active_class = active_category
+            showActiveFlowers()
+        })
 
-
-
-
-
-
-
-
-
+        $(".main-cat-button").on("click", function () {
+            active_class = "group-header"
+            showActiveFlowers()
+        })
     })
     $(".pickup").change(function () {
         $('.address').prop("disabled", this.checked)
         $(".time , .time-about").fadeToggle()
     })
-
-
 
     function getTimeNow() {
         var currentdate = new Date();
@@ -544,7 +550,7 @@
                         <div>
                             <div class="fl-qp">
                                 <p>€${cartItem.flowerPrice}</p>
-                                <p>К-ть: ${cartItem.flowerCount}</p>
+                                <p>číslo: ${cartItem.flowerCount}</p>
                             </div>
                             <div class="edit-order-buttons">
                                 <i class="fa fa-trash delete-flower-order"></i>
@@ -679,7 +685,7 @@
             slidesToShow: 3,
             slidesToScroll: 1,
             asNavFor: '.flower-image-carousel',
-            
+
             arrows: false,
             dots: false,
             centerMode: false,

@@ -3,6 +3,26 @@
     src: url('/Mofance.otf'); 
 }
 
+.active-block
+{
+    display: block !important;
+}
+
+.active-grid
+{
+    display: grid !important;
+}
+
+.active-flex
+{
+    display: flex !important;
+}
+
+.deactivated
+{
+    display: none !important;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -904,6 +924,13 @@ footer .underline {
 
 .fp-items {
     flex: 5;
+    /* grid-template-columns: repeat(4, 20%); */
+    grid-template-columns: repeat(3, 18.8vw);
+    justify-content: space-around;
+    grid-auto-rows: 23vw;
+    /* width: 85%; */
+    /* margin: 0 auto; */
+    grid-gap: 3vw;
 }
 
 .list-items {

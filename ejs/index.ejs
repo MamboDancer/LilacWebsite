@@ -17,7 +17,7 @@
     <header>
         <corner>
             <div class="full-header">
-                <img class="logo" title="logo" src="./images/const/LilacLogo.png">
+                <img class="logo" title="logo" src="./images/const/LilacLogo.png" onclick="logoShowFlowers()">
             </div>
             <div class="contacts">
                 <div class="phone"><a href="tel:+421948482323">+421 948 482 323</a></div>
@@ -52,6 +52,7 @@
     </header>
     <div class="main-block">
         <div class="main-categories">
+            <ul class="main-cat-button item-category">Hlavná</ul>
             <%- include("./partials/categories.ejs") %>
         </div>
         <div class="fp-items">
