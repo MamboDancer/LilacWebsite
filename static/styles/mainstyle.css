@@ -1,8 +1,8 @@
 @font-face {
     font-family: 'Mofance'; 
-    src: url('/Mofance.otf'); 
+    src: url('/Sofia.ttf'); 
 }
-
+/* Chilanka */
 .active-block
 {
     display: block !important;
