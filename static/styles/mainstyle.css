@@ -386,7 +386,7 @@ corner p {
     
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5,1fr);
+    grid-template-rows: repeat(4,1fr);
     place-items: center;
 }
 
@@ -507,7 +507,7 @@ corner p {
 
 .buy-modal .ui-grid {
     grid-column: 2 / -1;
-    grid-row: 5/-1;
+    grid-row: 4/-1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
