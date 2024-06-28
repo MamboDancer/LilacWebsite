@@ -218,13 +218,19 @@
             $(priceEl).html(`€${last_price}`)
         })
         $(".buy-modal-wrapper, .order-modal-wrapper").on("click", function () {
+            $('.flower-image-carousel').slick('unslick');
+            $('.slider-nav').slick('unslick');
             $(this).css("display", "none")
         })
         $(".buy-modal, .order-modal").on("click", function (event) {
+            // $('.flower-image-carousel').slick('unslick');
+            // $('.slider-nav').slick('unslick');
             event.stopPropagation()
         })
 
         $(".to-cart-button").click(function () {
+            $('.flower-image-carousel').slick('unslick');
+            $('.slider-nav').slick('unslick');
             if (EDIT)
                 editCart(FLOWERNAME)
             try {
@@ -404,6 +410,13 @@
             if ($(this).find(".list-items").is(".dropdown-menu-open")) $(this).find("arrow").html("⯅")
             else $(this).find("arrow").html("⯆")
         })
+
+
+
+
+
+
+
 
 
 
@@ -620,9 +633,9 @@
         $(".cart-item-flower").css("display", "none")
         $(".cart-items").css("display", "none")
         if (EDIT)
-            $(".buy-modal-wrapper").find('.to-cart-button').html("Змінити")
+            $(".buy-modal-wrapper").find('.to-cart-button').html("Zmeniť")
         else
-            $(".buy-modal-wrapper").find('.to-cart-button').html("В Кошик")
+            $(".buy-modal-wrapper").find('.to-cart-button').html("Do košíka")
         let parent = $(el)
         let flowerData = {
             flowerName: $(parent).find(".flower-name").html(),
@@ -632,15 +645,12 @@
             flowerDescription: ""
         }
         $(".flower-image-carousel").html("")
+        $(".slider-nav").html("")
         all_flowers.forEach(flower => {
             if (flower.id == id) {
                 flowerData.flowerDescription = flower.description
-                let i = 0
                 flower.image.split(",").forEach(flower_image => {
-                    if(i == 0)  $(".flower-image-carousel").append(`<img src="${flower_image}" class="flower-image-modal"/>`)
-                    i++
-                    console.log(flower_image)
-                    $(".flower-image-carousel").append(`<img src="${flower_image}" class="flower-image-modal"/>`)
+                    $(".flower-image-carousel, .slider-nav").append(`<img src="${flower_image}" class="flower-image-modal"/>`)
                 })
                 return
             }
@@ -655,6 +665,28 @@
         $(form).find(".flower-price").attr("price", flowerData.flowerPrice.split("€")[1])
         $(form).find("input").val(1)
         $(form).find(".flower-description").html(flowerData.flowerDescription)
+
+
+
+        $('.flower-image-carousel').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: false,
+            fade: true,
+            asNavFor: '.slider-nav'
+        });
+        $('.slider-nav').slick({
+            slidesToShow: 3,
+            slidesToScroll: 1,
+            asNavFor: '.flower-image-carousel',
+            
+            arrows: false,
+            dots: false,
+            centerMode: false,
+            focusOnSelect: true,
+            autoplay: true,
+            autoplaySpeed: 2000
+        });
     }
 
 
