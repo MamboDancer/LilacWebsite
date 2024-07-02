@@ -227,7 +227,7 @@
             // f.preventDefault() //
             const subc = $(".add-sub-category input").val()
             const c = $(".add-sub-category .category").val()
-            $(`.${c}`).find(".list-items").append(`<li class="${subc.replaceAll(" ", "_")} item-subcategory"><a href="#${subc.replaceAll(" ", "_")}">${subc}</a></li>`)
+            $(`.${c}`).find(".list-items").append(`<li class="${subc.replaceAll(" ", "_")} item-subcategory"><p>${subc}</p></li>`)
             await fetch("/setcategory", {
                 method: 'POST',
                 headers:
