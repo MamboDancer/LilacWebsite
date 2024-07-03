@@ -94,9 +94,8 @@
             if ($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
         }
         showActiveFlowers()
-        for(let i = 0; i < $(".group").length; i++)
-        {
-            if($(".group").eq(i).children().length == 0) $(".group").eq(i).parent().css("display", "none")
+        for (let i = 0; i < $(".group").length; i++) {
+            if ($(".group").eq(i).children().length == 0) $(".group").eq(i).parent().css("display", "none")
         }
     }
 
@@ -111,10 +110,9 @@
             $(".fp-items").addClass("active-grid")
         }
 
-        
-        for(let i = 0; i < $(".sub-fl").length; i++)
-        {
-            if($(".sub-fl").eq(i).attr("sub-category") == active_class) $(".sub-fl").eq(i).removeClass("deactivated")
+
+        for (let i = 0; i < $(".sub-fl").length; i++) {
+            if ($(".sub-fl").eq(i).attr("sub-category") == active_class) $(".sub-fl").eq(i).removeClass("deactivated")
             else $(".sub-fl").eq(i).addClass("deactivated")
         }
     }
@@ -665,6 +663,7 @@
                 return
             }
         })
+
         let form = $(".buy-modal-wrapper .order-form")
         $(form).find(".flower-name").html(flowerData.flowerName)
         $(form).find(".flower-name").attr("flower-id", flowerData.flowerId)
@@ -674,9 +673,11 @@
         $(form).find(".flower-price").html(flowerData.flowerPrice)
         $(form).find(".flower-price").attr("price", flowerData.flowerPrice.split("€")[1])
         $(form).find("input").val(1)
-        $(form).find(".flower-description").html(flowerData.flowerDescription)
-
-
+        let description = ""
+        flowerData.flowerDescription.split("\n").forEach(line => {
+            description += `<p>&#x2022 ${line}</p>`
+        })
+        $(form).find(".flower-description").html(description)
 
         $('.flower-image-carousel').slick({
             slidesToShow: 1,
@@ -685,11 +686,11 @@
             fade: true,
             asNavFor: '.slider-nav'
         });
+
         $('.slider-nav').slick({
             slidesToShow: 3,
             slidesToScroll: 1,
             asNavFor: '.flower-image-carousel',
-
             arrows: false,
             dots: false,
             centerMode: false,
@@ -697,9 +698,25 @@
             autoplay: true,
             autoplaySpeed: 2000
         });
+
+        $(".flower-description").stop()
+        $(".flower-description").scrollTop(0)
+        function scrollDown(element, duration) {
+            $(element).animate({ scrollTop: $(element)[0].scrollHeight / 2 }, duration, 'linear', function () {
+                scrollUp(element, duration);
+            });
+        }
+
+        function scrollUp(element, duration) {
+            $(element).animate({ scrollTop: -200 }, duration / 1.5, 'linear', function () {
+                scrollDown(element, duration);
+            });
+        }
+        scrollDown('.flower-description', 8000);
+        $(".flower-description").bind("mousewheel DOMMouseScroll", function () {
+            $(".flower-description").stop()
+        })
     }
-
-
 
     function showSearchItems(userinput) {
         let lilist = $(".search-list").find("li")
