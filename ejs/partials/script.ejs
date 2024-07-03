@@ -94,6 +94,10 @@
             if ($(".group-header").eq(i).children() == 1) $(".group-header").eq(i).remove()
         }
         showActiveFlowers()
+        for(let i = 0; i < $(".group").length; i++)
+        {
+            if($(".group").eq(i).children().length == 0) $(".group").eq(i).parent().css("display", "none")
+        }
     }
 
     function showActiveFlowers() {
