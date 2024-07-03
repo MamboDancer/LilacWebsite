@@ -20,7 +20,7 @@
         $(".search-list").html("")
         data.forEach(el => {
             let newElement = `<li class="flower-search-el" flowerid="${el.id}"> 
-                    <img src="${el.image}">
+                    <img src="${el.image.split(",")[0]}">
                     <p class="search-flower-name">${el.name}</p>
                 </li>`
             $(".search-list").append(newElement)
