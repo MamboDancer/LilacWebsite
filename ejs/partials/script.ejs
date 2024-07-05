@@ -160,12 +160,12 @@
                 $(lst).css("width", `${wid}px`)
                 $(p).css("width", `${wid}px`)
             }
-        $("body").on("mouseenter", ".flower-search-el", function () {
-            $(this).find("img").css({
-                "transform": "scale(2)",
-                "z-index": "5"
-            })
-        })
+        // $("body").on("mouseenter", ".flower-search-el", function () {
+        //     $(this).find("img").css({
+        //         "transform": "scale(2)",
+        //         "z-index": "5"
+        //     })
+        // })
 
         $("body").on("mouseleave", ".flower-search-el", function () {
             $(this).find("img").css({
@@ -282,24 +282,8 @@
         })
 
         $("html").on("click", ".cart", function () {
-            const li = $(".cart-items").find("li")
-            if ($(li).length <= 1) {
-                alertify.message("Кошик порожній!")
-                return
-            }
-            if ($(".cart-items").css("display") == "grid") $(".cart-items").css("display", "none")
-            else $(".cart-items").css("display", "grid")
-            if ($(li).css("display") == "grid") $(li).css("display", "none")
-            else {
-                $(li).css("display", "grid")
-                $(li).css("scale", "1")
-                $(li).css("border", "0")
-                $(li).css("z-index", "11")
-                $(li).find("p").css("text-decoration", "none")
-                $(".fl-qp").css("display", "grid")
-                $(".edit-order-buttons").css("display", "none")
-            }
-            event.stopPropagation()
+            if(!localStorage.getItem("cart") || !JSON.parse(localStorage.getItem("cart")).length )  alertify.message("Кошик порожній!")
+            else location = "/cart"
         })
 
         $("html").on("click", ".cart-items > *", function () {

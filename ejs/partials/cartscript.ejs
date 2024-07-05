@@ -1,0 +1,16 @@
+<script>
+    console.log()
+
+    $(document).ready(function () {
+        cart = JSON.parse(localStorage.getItem("cart"))
+        count = cart.length
+        if (count <= 0) {
+            $(".cart-item-count").css("opacity", "0")
+        }
+        else {
+            $(".cart-item-count").css("opacity", "100")
+        }
+        if (count > 9) count = "9+"
+        $(".cart-item-count").html(count)
+    })
+</script>

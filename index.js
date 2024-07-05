@@ -55,6 +55,10 @@ app.get("/lilacadmin", (req, res) => {
     res.render('lilacadmin')
 })
 
+app.get("/cart", (req, res) => {
+    res.render('cart')
+})
+
 
 app.listen(PORT, () => {
     console.log(`Express running on ${PORT}, View Engine is ${app.get("view engine")}, Views folder is ${app.get("views")}`)
