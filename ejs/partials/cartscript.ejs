@@ -1,6 +1,4 @@
 <script>
-    console.log()
-
     $(document).ready(function () {
         cart = JSON.parse(localStorage.getItem("cart"))
         count = cart.length
@@ -12,5 +10,43 @@
         }
         if (count > 9) count = "9+"
         $(".cart-item-count").html(count)
+
+        const cart_content = JSON.parse(localStorage.getItem("cart"))
+        if(cart_content.length > 0) 
+        {
+            showCartContent(cart_content)
+        }
+    })
+
+
+
+
+    function showCartContent(cart_content)
+    {
+        let cart_summ = 0.0
+        cart_content.forEach(cart_item => {
+            $(".cart-content").append(`<div class="cart-flower">${createFlowerItem(cart_item)}</div>`)
+            cart_summ += parseFloat(cart_item.flowerPrice)
+        })
+
+        $(".cart-summ").html(`Suma Košíka €${cart_summ} z pdv`)
+
+    }
+
+    function createFlowerItem(flower)
+    {
+        return `
+            <img src="${flower.flowerImage}" class="cart-flower-image">
+            <p class="cart-flower-name">${flower.flowerName}</p>
+            <p class="cart-flower-count">${flower.flowerCount}</p>
+            <p class="cart-flower-price">€${flower.flowerPrice}</p>
+        `
+    }
+
+
+
+
+    $(".back-to-shop").on("click", function(){
+        location = "/"
     })
 </script>

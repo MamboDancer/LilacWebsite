@@ -53,8 +53,9 @@ header>* {
 
 header .logo {
     width: 33vw;
-
 }
+
+
 
 .full-header {
     display: flex;
@@ -775,6 +776,7 @@ corner p {
 .ajs-message.ajs-visible {
     background-color: var(--main-color);
     border-radius: 10px;
+    font-size: 1.2vw;
 }
 
 .confirm-order-button:hover {

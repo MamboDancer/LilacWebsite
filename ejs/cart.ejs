@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%- include("./partials/links.ejs") %>
-    <link href="/styles/mainstyle.css" rel="stylesheet">
-    <link href="/styles/phone-main.css" rel="stylesheet">
-    <title>LilacKvety - Cart</title>
+        <link href="/styles/mainstyle.css" rel="stylesheet">
+        <link href="/styles/phone-main.css" rel="stylesheet">
+        <link href="/styles/cartstyle.css" rel="stylesheet">
+        <title>LilacKvety - Košík</title>
 </head>
+
 <body>
     <header>
         <corner>
@@ -46,8 +49,36 @@
 
     </header>
 
+    <div class="cart-main">
+        <div class="cart-header">
+            <p>Košík</p>
+            <div class="cart-line"></div>
+        </div>
+        <div class="cart-data">
+            <div class="info-block">
 
+            </div>
+            <div class="cart-content">
+
+            </div>
+        </div>
+        <div class="cart-checkout">
+            <div class="promocode">
+                <p class="promo-header">Zľavový kód</p>
+                <div class="p-buttons">
+                    <input type="text" class="promo-input">
+                    <div class="try-promo">Použiť</div>
+                </div>
+            </div>
+            <p class="cart-summ">Suma 999.99 z pdv</p>
+            <div class="checkout-buttons">
+                <div class="back-to-shop">Späť do eshopu</div>
+                <div class="confirm-cart">Pokračovať</div>
+            </div>
+        </div>
+    </div>
 
     <%- include("./partials/cartscript.ejs") %>
 </body>
+
 </html>

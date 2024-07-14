@@ -8,7 +8,7 @@
                 showFlowers(response)
                 addToSearch(response)
             }
-            else alertify.error("Помилка серверу!")
+            else alertify.error("Chyba servera!")
         })
 
     function logoShowFlowers() {
@@ -247,7 +247,7 @@
                 const name = $(parent).find(".flower-name").html()
                 const id = $(parent).find(".flower-name").attr("flower-id")
                 const price = $(parent).find(".flower-price").html().split("€")[1]
-                const img = $(parent).find(".flower-image").attr("src")
+                const img = all_flowers.find(x => x.id === Number(id)).image.split(",")[0]
                 const count = $(parent).find(".flower-count").val()
                 const el = {
                     flowerName: name,
@@ -256,6 +256,7 @@
                     flowerCount: Number(count),
                     flowerId: id
                 }
+                console.log(el)
                 let thiscart = JSON.parse(localStorage.getItem("cart"))
                 let newFlower = true
                 thiscart.forEach(cartItem => {
@@ -272,17 +273,17 @@
                 localStorage.setItem("cart", JSON.stringify(thiscart))
                 cart = localStorage.getItem("cart")
                 showCart(cart)
-                alertify.success('Успішно додано в кошик!')
+                alertify.success('Pridané do košíka!')
                 $(".buy-modal-wrapper").css("display", "none")
             }
             catch {
-                alertify.error('Сталася помилка!')
+                alertify.error('Nastala chyba!')
             }
 
         })
 
         $("html").on("click", ".cart", function () {
-            if(!localStorage.getItem("cart") || !JSON.parse(localStorage.getItem("cart")).length )  alertify.message("Кошик порожній!")
+            if(!localStorage.getItem("cart") || !JSON.parse(localStorage.getItem("cart")).length )  alertify.message("Košík je prázdny!")
             else location = "/cart"
         })
 
@@ -388,7 +389,7 @@
             $("html").on("click", ".close-cart", function () {
                 const li = $(".cart-items").find("li")
                 if ($(li).length <= 1) {
-                    alertify.message("Кошик порожній!")
+                    alertify.message("Košík je prázdny!")
                     return
                 }
                 $(".cart-items").css("display", "none")
@@ -478,12 +479,12 @@
                         if (tgstatus) tgResponce = true
                         if (tgResponce && dbResponce) {
                             Swal.fire({
-                                title: `Дякуємо за замовлення!`,
-                                text: `Найближчим часом очікуйте дзвінка для підтвердження замовлення.`,
+                                title: `Ďakujeme za objednávku!`,
+                                text: `Čoskoro očakávajte telefonát na potvrdenie objednávky.`,
                                 icon: "success",
                                 showDenyButton: false,
-                                confirmButtonText: "Підтвердити",
-                                denyButtonText: "Відміна"
+                                confirmButtonText: "Potvrdiť",
+                                denyButtonText: "Zrušiť"
                             })
                             localStorage.setItem("cart", "[]")
                             showCart("[]")
@@ -492,12 +493,12 @@
                         }
                         else {
                             Swal.fire({
-                                title: `Ой!`,
-                                text: `Щось пішло не так...`,
+                                title: `Oi!`,
+                                text: `Chyba servera`,
                                 icon: "error",
                                 showDenyButton: false,
-                                confirmButtonText: "ОК",
-                                denyButtonText: "Відміна"
+                                confirmButtonText: "Áno",
+                                denyButtonText: "Zrušiť"
                             })
                         }
                     })
@@ -579,15 +580,15 @@
             var flowerName = $(event.target).parent().parent().parent().children()[1]
             flowerName = $(flowerName).html()
             Swal.fire({
-                title: `Прибрати "${flowerName}" з кошика?`,
+                title: `Odstrániť "${flowerName}" z košíka?`,
                 icon: "question",
                 showDenyButton: true,
-                confirmButtonText: "Так",
-                denyButtonText: "Відміна"
+                confirmButtonText: "Áno",
+                denyButtonText: "Zrušiť"
             }).then((result) => {
                 if (result.isConfirmed) {
                     editCart(flowerName)
-                    alertify.message(`"${flowerName}" видалено з кошика`)
+                    alertify.message(`"${flowerName}" Odstránené z košíka`)
                     $(".cart-items").css("display", "none")
                 } else if (result.isDenied) {
 
