@@ -11,9 +11,69 @@
         if (count > 9) count = "9+"
         $(".cart-item-count").html(count)
 
-        const cart_content = JSON.parse(localStorage.getItem("cart"))
-        if(cart_content.length > 0) 
-        {
+        let cart_content = JSON.parse(localStorage.getItem("cart"))
+        if (cart_content.length > 0) {
+            showCartContent(cart_content)
+        }
+
+        $("html").on("click", '.edit-flower-count-up', function () {
+            let id = $(this).parent().parent().attr("id")
+            editFlowerCount(id, true)
+        })
+        $("html").on("click", '.edit-flower-count-down', function () {
+            let id = $(this).parent().parent().attr("id")
+            editFlowerCount(id, false)
+        })
+
+        function editFlowerCount(id, side) {
+            let flower = cart_content.find(x => Number(x.flowerId) === Number(id))
+            if (flower.flowerCount <= 1 && !side) {
+                Swal.fire({
+                    title: `Видалити з кошика?`,
+                    icon: "question",
+                    showDenyButton: true,
+                    confirmButtonText: "Potvrdiť",
+                    denyButtonText: "Zrušiť"
+                })
+                    .then(result => {
+                        if (result.isConfirmed) {
+                            deleteFlowerFromCart(id)
+                            alertify.message('Товар видалено з кошика')
+                        }
+                    })
+                return
+            }
+            let index = cart_content.indexOf(flower)
+            let actualprice = parseFloat(flower.flowerPrice) / flower.flowerCount
+            if (side) flower.flowerCount++
+            else flower.flowerCount--
+            flower.flowerPrice = String(Number(actualprice * flower.flowerCount).toFixed(2))
+            cart_content[index] = flower
+            showCartContent(cart_content)
+        }
+
+
+        $("html").on("click", ".delete-flower-cart", function () {
+            let id = $(this).parent().attr("id")
+            Swal.fire({
+                title: `Видалити з кошика?`,
+                icon: "question",
+                showDenyButton: true,
+                confirmButtonText: "Potvrdiť",
+                denyButtonText: "Zrušiť"
+            })
+                .then(result => {
+                    if (result.isConfirmed) {
+                        deleteFlowerFromCart(id)
+                        alertify.message('Товар видалено з кошика')
+                    }
+                })
+        })
+
+        function deleteFlowerFromCart(id) {
+            let flower = cart_content.find(x => Number(x.flowerId) === Number(id))
+            let index = cart_content.indexOf(flower)
+            cart_content.splice(index, 1)
             showCartContent(cart_content)
         }
     })
@@ -21,32 +81,34 @@
 
 
 
-    function showCartContent(cart_content)
-    {
+
+    function showCartContent(cart_content) {
+        $(".cart-content").html("")
         let cart_summ = 0.0
         cart_content.forEach(cart_item => {
-            $(".cart-content").append(`<div class="cart-flower">${createFlowerItem(cart_item)}</div>`)
+            $(".cart-content").append(`<div class="cart-flower" id="${cart_item.flowerId}">${createFlowerItem(cart_item)}</div>`)
             cart_summ += parseFloat(cart_item.flowerPrice)
         })
 
-        $(".cart-summ").html(`Suma Košíka €${cart_summ} z pdv`)
-
+        $(".cart-summ").html(`Suma Košíka €${Number(cart_summ).toFixed(2)} z pdv`)
+        localStorage.setItem("cart", JSON.stringify(cart_content))
     }
 
-    function createFlowerItem(flower)
-    {
+    function createFlowerItem(flower) {
         return `
             <img src="${flower.flowerImage}" class="cart-flower-image">
             <p class="cart-flower-name">${flower.flowerName}</p>
-            <p class="cart-flower-count">${flower.flowerCount}</p>
+            <div class="flow-count">
+                <i class="fa fa-arrow-up edit-flower-count-up"></i>
+                <p class="cart-flower-count">${flower.flowerCount}</p>
+                <i class="fa fa-arrow-down edit-flower-count-down"></i>
+            </div>
             <p class="cart-flower-price">€${flower.flowerPrice}</p>
+            <i class="fa fa-trash delete-flower-cart"></i>
         `
     }
 
-
-
-
-    $(".back-to-shop").on("click", function(){
+    $(".back-to-shop").on("click", function () {
         location = "/"
     })
 </script>
