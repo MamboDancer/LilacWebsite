@@ -96,14 +96,49 @@
 
 
     function showOrderUI() {
-        let orderui = 
+        let orderui =
+            `
+        <form class="order-ui">
+            <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Spôsob prevzatia objednávky</b></p>
+                <div class="delivery-type-select">
+                    <div class="delivery-courier">Dorucenie kurierom</div>
+                    <div class="delivery-self">Osobny order</div>
+                </div>
+            </div>
+            <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Komu bude objednávka doručená</b></p>
+                <input type="text" class="name-input" placeholder="Meno" required>
+                <input type="text" class="surname-input" placeholder="Priezvisko" required>
+                <input type="tel" class="surname-input" placeholder="Telefón (formát +421)" required>
+            </div>
+            <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Kam bude objednávka doručená</b></p>
+                <p class="country-subheader">Krajina doručenia <b>Slovensko</b></p>
+                <input type="text" class="city-input" placeholder="Zvoľte si mesto/PSČ">
+                <input type="text" class="street-input" placeholder="Ulica" required>
+                <input type="tel" class="house-number-input" placeholder="Číslo domu" required>
+                <input type="tel" class="firm-name-input" placeholder="Názov firmy">
+            </div>
+            <div class="order-punkt op-calendar">
+                <p class="order-ui-subheader"><b>Kedy bude objednávka doručená</b></p>
+                <input type="date" class="calendar" />
+                <input type="time" class="order-time" />
+            </div>
+        </form>
         `
-        <div class="order-ui">
-            
-        </div>
-        `
-
+        $('.cart-header > p').html("Košík > Dodanie")
         $('.cart-content').html(orderui)
+
+        var yesterday = new Date(Date.now() - 86400000);
+        $('.calendar').pignoseCalendar({
+            buttons: true,
+            week: 1,
+            weeks: ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'],
+            disabledRanges: [
+                ["0001-01-01", yesterday.toISOString().split("T")[0]]
+            ],
+        })
     }
 
     function showCartContent(cart_content) {
@@ -135,4 +170,5 @@
     $(".back-to-shop").on("click", function () {
         location = "/"
     })
+
 </script>
