@@ -76,7 +76,6 @@
         })
 
         data.forEach((flower) => {
-            console.log(flower)
             image = flower.image.split(",")
             flower.sub_category = flower.sub_category.replaceAll(" ", "_")
             let item = createItem(flower, image, flower.sub_category)
@@ -256,7 +255,6 @@
                     flowerCount: Number(count),
                     flowerId: id
                 }
-                console.log(el)
                 let thiscart = JSON.parse(localStorage.getItem("cart"))
                 let newFlower = true
                 thiscart.forEach(cartItem => {

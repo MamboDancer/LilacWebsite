@@ -222,7 +222,9 @@ b {
 }
 
 .delivery-type-select {
-    width: 80%;
+    width: 75%;
+    gap: 15%;
+    height: 10vh;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -257,4 +259,45 @@ b {
     padding-bottom: 0;
     width: 80%;
     font-size: 1.8vw;
+}
+
+.delivery-courier, .delivery-self
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 8px;
+    padding: 2%;
+    background-color: var(--bgclr);
+    border: 2px solid var(--bgclr);
+}
+
+
+.delivery-courier:hover, .delivery-self:hover
+{
+    cursor: pointer;
+    border: 2px solid var(--main-color);
+}
+
+.active-delivery
+{
+    background-color: var(--main-color);
+    flex: 3;
+    font-size: 1.7vw;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.unactive-delivery
+{
+    flex: 1;
+    background-color: var(--bgclr);
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+
 }

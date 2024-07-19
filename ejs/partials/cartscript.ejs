@@ -86,7 +86,26 @@
             step = 1
             cartProceed(step)
         })
+        $("html").on("click", ".delivery-type-select > *", function () {
+            if ($(this).attr("class").split(" ")[1] == "active-delivery") return
+            showOrderUI(Boolean(Number($(this).attr("id"))))
+
+            for (let i = 0; i < 2; i++) {
+                let el = $(this).parent().find("div").eq(i)
+                if ($(el).attr("class").split(" ")[1] == "unactive-delivery") {
+                    $(el).removeClass("unactive-delivery")
+                    $(el).addClass("active-delivery")
+                }
+                else {
+                    $(el).addClass("unactive-delivery")
+                    $(el).removeClass("active-delivery")
+                }
+            }
+
+        })
     })
+
+
 
     function cartProceed(step) {
         if (step == 1) {
@@ -95,15 +114,16 @@
     }
 
 
-    function showOrderUI() {
+    function showOrderUI(type = false) {
+        $('.cart-content').html("")
         let orderui =
             `
         <form class="order-ui">
             <div class="order-punkt">
                 <p class="order-ui-subheader"><b>Spôsob prevzatia objednávky</b></p>
                 <div class="delivery-type-select">
-                    <div class="delivery-courier">Dorucenie kurierom</div>
-                    <div class="delivery-self">Osobny order</div>
+                    <div class="delivery-courier unactive-delivery" id="0">Dorucenie kurierom &#x2022; 5€</div>
+                    <div class="delivery-self active-delivery" id="1">Osobny order</div>
                 </div>
             </div>
             <div class="order-punkt">
@@ -114,12 +134,8 @@
             </div>
             <div class="order-punkt">
                 <p class="order-ui-subheader"><b>Kam bude objednávka doručená</b></p>
-                <p class="country-subheader">Krajina doručenia <b>Slovensko</b></p>
-                <input type="text" class="city-input" placeholder="Zvoľte si mesto/PSČ">
-                <input type="text" class="street-input" placeholder="Ulica" required>
-                <input type="tel" class="house-number-input" placeholder="Číslo domu" required>
-                <input type="tel" class="firm-name-input" placeholder="Názov firmy">
-            </div>
+                    ${getOrderPlace(type)}
+                </div>
             <div class="order-punkt op-calendar">
                 <p class="order-ui-subheader"><b>Kedy bude objednávka doručená</b></p>
                 <input type="date" class="calendar" />
@@ -140,6 +156,20 @@
             ],
         })
     }
+
+    function getOrderPlace(type) {
+        if (type) return `
+                <p class="country-subheader">Krajina doručenia <b>Slovensko</b></p>
+                <p class="country-subheader">Mesto <b>Banská Bystrica (97401)</b></p>
+                <input type="text" class="street-input" placeholder="Ulica" required>
+                <input type="tel" class="house-number-input" placeholder="Číslo domu" required>
+                <input type="tel" class="firm-name-input" placeholder="Názov firmy">
+        
+        `
+        else return `aboba`
+
+    }
+
 
     function showCartContent(cart_content) {
         $(".cart-content").html("")

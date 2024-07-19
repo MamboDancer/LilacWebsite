@@ -303,7 +303,12 @@
         })
 
         setInterval(() => {
-            $.post(`/api/db/getOrders`, {})
+            $.post({
+                url: `/api/db/getOrders`,
+                headers: {
+                    "Authorization": "l*isupersecretkeyla*c"
+                }
+            })
                 .always((response) => {
                     if ($(window).width() < 767) showOrders(response, 'mobile')
                     else showOrders(response, 'pc')
@@ -315,7 +320,14 @@
             if (!confirm("Взяти замовлення в роботу?")) return
             const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
             const STATUS = 'inwork'
-            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+
+            $.post({
+                url: `/api/db/updateOrderStatus`,
+                data: { STATUS, ORDERID },
+                headers: {
+                    "Authorization": "l*isupersecretkeyla*c"
+                }
+            })
                 .always((response) => {
                     if (response) alertify.success("Замовлення прийняте!")
                     else alertify.error("Помилка!")
@@ -325,7 +337,13 @@
             if (!confirm("Відмінити замовлення?")) return
             const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
             const STATUS = 'cancelled'
-            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+            $.post({
+                url: `/api/db/updateOrderStatus`,
+                data: { STATUS, ORDERID },
+                headers: {
+                    "Authorization": "l*isupersecretkeyla*c"
+                }
+            })
                 .always((response) => {
                     if (response) alertify.success("Замовлення відмінене!")
                     else alertify.error("Помилка!")
@@ -335,7 +353,13 @@
             if (!confirm("Завершити замовлення?")) return
             const ORDERID = Number($(this).parent().parent().find(".order-id").html().split("#")[1])
             const STATUS = 'done'
-            $.post(`/api/db/updateOrderStatus`, { STATUS, ORDERID })
+            $.post({
+                url: `/api/db/updateOrderStatus`,
+                data: { STATUS, ORDERID },
+                headers: {
+                    "Authorization": "l*isupersecretkeyla*c"
+                }
+            })
                 .always((response) => {
                     if (response) alertify.success("Замовлення завершене!")
                     else alertify.error("Помилка!")

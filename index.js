@@ -6,9 +6,12 @@ import cookieParser from 'cookie-parser'
 import https from 'https'
 import fs from 'fs'
 import multer from 'multer'
+
 const PORT = process.env.PORT ?? 3000
 const app = express()
 const __dirname = path.resolve()
+
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         let folder = path.resolve(__dirname, 'static', 'images', 'flowers')
