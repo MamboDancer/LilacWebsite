@@ -89,19 +89,12 @@
         $("html").on("click", ".delivery-type-select > *", function () {
             if ($(this).attr("class").split(" ")[1] == "active-delivery") return
             showOrderUI(Boolean(Number($(this).attr("id"))))
-
-            for (let i = 0; i < 2; i++) {
-                let el = $(this).parent().find("div").eq(i)
-                if ($(el).attr("class").split(" ")[1] == "unactive-delivery") {
-                    $(el).removeClass("unactive-delivery")
-                    $(el).addClass("active-delivery")
-                }
-                else {
-                    $(el).addClass("unactive-delivery")
-                    $(el).removeClass("active-delivery")
-                }
-            }
-
+            let thisid = $(this).attr("id")
+            let nothisid = 0
+            if (thisid == "0") nothisid = "1"
+            else nothisid = "0"
+            $(".delivery-type-select").parent().find(`#${thisid}`).addClass("active-delivery").removeClass("unactive-delivery")
+            $(".delivery-type-select").parent().find(`#${nothisid}`).removeClass("active-delivery").addClass("unactive-delivery")
         })
     })
 
@@ -122,8 +115,8 @@
             <div class="order-punkt">
                 <p class="order-ui-subheader"><b>Spôsob prevzatia objednávky</b></p>
                 <div class="delivery-type-select">
-                    <div class="delivery-courier unactive-delivery" id="0">Dorucenie kurierom &#x2022; 5€</div>
-                    <div class="delivery-self active-delivery" id="1">Osobny order</div>
+                    <div class="delivery-courier active-delivery" id="0">Dorucenie kurierom &#x2022; 5€</div>
+                    <div class="delivery-self" id="1">Osobny order</div>
                 </div>
             </div>
             <div class="order-punkt">
@@ -138,35 +131,87 @@
                 </div>
             <div class="order-punkt op-calendar">
                 <p class="order-ui-subheader"><b>Kedy bude objednávka doručená</b></p>
-                <input type="date" class="calendar" />
-                <input type="time" class="order-time" />
+                <div class="time-group">
+                    <p>Data</p>
+                    <p>Time</p>
+                    <input type="date" class="calendar" name="calendar" pattern="\d{4}-\d{2}-\d{2}" required/>
+                    <input class="order-time" name="order-time" required/>
+                </div>
             </div>
         </form>
         `
+
+
+
         $('.cart-header > p').html("Košík > Dodanie")
         $('.cart-content').html(orderui)
-
+        $('.order-time').timepicker({
+            "step": 10,
+            useSelect: true,
+            show2400: true,
+            'timeFormat': 'H:i',
+        })
         var yesterday = new Date(Date.now() - 86400000);
+        if (new Date(Date.now()).getHours() >= 18 || 
+           (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 0) ||
+           (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 6))
+            yesterday = new Date(Date.now())
+
         $('.calendar').pignoseCalendar({
             buttons: true,
             week: 1,
             weeks: ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'],
+            monthsLong: ['Január', 'Február', 'Marec', 'Apríl', 'Máj', 'Jún', 'Júl', 'August', 'September', 'Október', 'November', 'December'],
+            months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             disabledRanges: [
                 ["0001-01-01", yesterday.toISOString().split("T")[0]]
             ],
+            apply: function (date, context) {
+                setTimeChooser(date)
+            }
         })
     }
 
+
+
+    function setTimeChooser(date) {
+        if (new Date().getDay() == new Date(date).getDay() && new Date().getMonth() == new Date(date).getMonth()) {
+            date = Date.now()
+        }
+        let today = new Date(date).getDay()
+        console.log(new Date(date))
+        let mintime = 0
+        let maxtime = 0
+
+        let hoursnow = new Date(date + 1800000 ).getHours()
+        let minutesnow = (Math.round(new Date(date + 1800000 ).getMinutes() / 10) * 10) % 60
+        if (today == 0 || today == 6) {
+            mintime = (hoursnow >= 10 ? hoursnow : '10') +":"+ minutesnow
+            maxtime = '17.00'
+        }
+        else {
+            mintime = (hoursnow >= 8 ? hoursnow : '8') + ":" +minutesnow
+            maxtime = '19:00'
+        }
+        console.log(hoursnow, minutesnow)
+        $('.order-time').timepicker('option', 'minTime', mintime)
+        $('.order-time').timepicker('option', 'maxTime', maxtime)
+    }
+
     function getOrderPlace(type) {
-        if (type) return `
-                <p class="country-subheader">Krajina doručenia <b>Slovensko</b></p>
-                <p class="country-subheader">Mesto <b>Banská Bystrica (97401)</b></p>
+        if (!type) return `
+                <p class="country-subheader">Krajina doručenia: <b>Slovensko</b></p>
+                <p class="country-subheader">Mesto: <b>Banská Bystrica (97401)</b></p>
                 <input type="text" class="street-input" placeholder="Ulica" required>
                 <input type="tel" class="house-number-input" placeholder="Číslo domu" required>
                 <input type="tel" class="firm-name-input" placeholder="Názov firmy">
-        
         `
-        else return `aboba`
+        else return `
+                <p class="country-subheader">Krajina doručenia: <b>Slovensko</b></p>
+                <p class="country-subheader">Mesto: <b>Banská Bystrica (97401)</b></p>
+                <p class="country-subheader">Ulica: <b>29 augusta</b></p>
+                <p class="country-subheader">Číslo domu: <b>25</b></p>
+                <p class="country-subheader">Názov firmy: <b>Lilac Kvety</b></p>`
 
     }
 
