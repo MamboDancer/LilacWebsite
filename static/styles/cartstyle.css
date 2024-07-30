@@ -70,7 +70,7 @@ b {
 
 .cart-flower {
     display: grid;
-    grid-template-columns: 25% 37.5% 12.5% 18.75% 6.25%;
+    grid-template-columns: 25% 35.5% 14.5% 18.75% 6.25%;
     align-items: center;
     text-align: center;
     width: 100%;
@@ -110,6 +110,7 @@ b {
     align-items: center;
     flex-direction: column;
     height: 100%;
+    margin: 0 auto;
 }
 
 .delete-flower-cart:hover {

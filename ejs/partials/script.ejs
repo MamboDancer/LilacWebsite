@@ -247,7 +247,7 @@
                 const id = $(parent).find(".flower-name").attr("flower-id")
                 const price = $(parent).find(".flower-price").html().split("€")[1]
                 const img = all_flowers.find(x => x.id === Number(id)).image.split(",")[0]
-                const count = $(parent).find(".flower-count").val()
+                const count = parseInt($(parent).find(".cart-flower-count").html())
                 const el = {
                     flowerName: name,
                     flowerPrice: Number(price),
@@ -413,6 +413,18 @@
             active_class = "group-header"
             showActiveFlowers()
         })
+
+        $(".edit-flower-count-left").on("click", function(){
+            let count = parseInt($(this).parent().find("p").html())
+            if(count <= 1) return
+            $(this).parent().find("p").html(count-1 + " ks") 
+        })
+
+        $(".edit-flower-count-right").on("click", function(){
+            let count = parseInt($(this).parent().find("p").html())
+            $(this).parent().find("p").html(count+1 + " ks") 
+        })
+
     })
     $(".pickup").change(function () {
         $('.address').prop("disabled", this.checked)

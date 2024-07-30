@@ -36,7 +36,7 @@ conn.connect((err) => {
                 orderdata LONGTEXT CHARACTER SET ${charset},
                 status VARCHAR(255) CHARACTER SET ${charset},
                 ordertime VARCHAR(255) CHARACTER SET ${charset},
-                pickuptime VARCHAR(255) CHARACTER SET ${charset}
+                phonenumber VARCHAR(255) CHARACTER SET ${charset}
             )`, (err, res) => {
             if (err) console.log(err)
             else
@@ -109,8 +109,8 @@ getOrders = (req, res) => {
     })
 }
 createOrder = (req, res) => {
-    conn.query(`INSERT INTO orders (userdata, orderdata, ordertime, pickuptime, status)
-                VALUES ('${req.body.UD}','${req.body.CART}','${req.body.CURRENTTIME}','${req.body.ORDERTIME}','pending')`, (err, ress, f) => {
+    conn.query(`INSERT INTO orders (userdata, orderdata, ordertime, phonenumber, status)
+                VALUES ('${req.body.UD}','${req.body.CART}','${req.body.CURRENTTIME}','${req.body.ORDERNUMBER}','pending')`, (err, ress, f) => {
         if (err) {
             console.log(err)
             return res.send(false)

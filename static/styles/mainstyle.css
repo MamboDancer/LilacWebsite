@@ -478,7 +478,7 @@ corner p {
 .buy-modal .order-form .to-cart-button {
     background-color: var(--order-button-color);
     border: 1px solid var(--order-button-color);
-    color: white;
+    color: black;
     border-radius: .5vw;
     height: 90%;
     width: 80%;
@@ -492,7 +492,7 @@ corner p {
 
 .buy-modal .order-form .to-cart-button:hover {
     border: 1px solid var(--order-button-color);
-    background-color: white;
+    background-color: var(--bgclr);
     transition: .3s;
     cursor: pointer;
     color: black;
@@ -1047,3 +1047,24 @@ footer .underline {
 
 
 }
+
+.flow-count
+{
+    display: flex;
+    font-size: 1.2vw;
+    justify-content: space-between;
+    align-items: center;
+    width: 60%;
+}
+
+.flow-count i:hover
+{
+    cursor: pointer;
+    color: var(--main-color);
+}
+
+.cart-flower-count
+{
+    font-size: 1.6vw;
+}
+
