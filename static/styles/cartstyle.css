@@ -346,6 +346,8 @@ b {
     padding: 1%;
     background-color: var(--bgclr);
     resize: none;
+    border: none;
+    border-radius: 8px;
 }
 
 .confirm-first-step {
