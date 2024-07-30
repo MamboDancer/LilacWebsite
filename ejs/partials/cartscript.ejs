@@ -139,9 +139,9 @@
     function showOrderUI(type = false) {
         $('.cart-content').html("")
         if (!type)
-            $(".cart-summ").html(`Spolu €${Number(localStorage.getItem("cartsumm")) + 5} s DPH`)
+            $(".cart-summ").html(`Spolu €${(Number(localStorage.getItem("cartsumm")) + 5).toFixed(2)} s DPH`)
         else
-            $(".cart-summ").html(`Spolu €${Number(localStorage.getItem("cartsumm"))} s DPH`)
+            $(".cart-summ").html(`Spolu €${Number(localStorage.getItem("cartsumm")).toFixed(2)} s DPH`)
         let orderui =
             `
         <form class="order-ui">
