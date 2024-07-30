@@ -4,7 +4,6 @@
         let count = cart.length
         let step = localStorage.getItem("cart_step")
         if (step == undefined) localStorage.setItem("cart_step", 0)
-        console.log(localStorage.getItem("cart_step"))
         if (count <= 0) {
             $(".cart-item-count").css("opacity", "0")
             location = '/'
@@ -12,6 +11,14 @@
         else {
             $(".cart-item-count").css("opacity", "100")
         }
+        $("html").on("click", function () {
+            setTimeout(() => {
+                if (JSON.parse(localStorage.getItem("cart")).length <= 0 && !Swal.isVisible()) {
+                    $(".cart-item-count").css("opacity", "0")
+                    location = '/'
+                }
+            }, 500)
+        })
         if (count > 9) count = "9+"
         $(".cart-item-count").html(count)
 
@@ -96,48 +103,97 @@
             $(".delivery-type-select").parent().find(`#${thisid}`).addClass("active-delivery").removeClass("unactive-delivery")
             $(".delivery-type-select").parent().find(`#${nothisid}`).removeClass("active-delivery").addClass("unactive-delivery")
         })
+
+        $("html").on("click", ".toggle-sender", function () {
+            if (!this.checked) {
+                $(".receiver-punkt").slideDown(200)
+                $(".receiver-punkt").find("input").prop("required", true)
+            }
+            else {
+                $(".receiver-punkt").slideUp(200)
+                $(".receiver-punkt").find("input").prop("required", false)
+            }
+        })
+
+        $("html").on("submit", ".order-ui", function (event) {
+            event.preventDefault()
+            let order_data = $(this).serializeArray()
+            if (order_data.length > 12) order_data.push({ "name": "is_courier", "value": true })
+            else order_data.push({ "name": "is_courier", "value": false })
+            let last_order_data = {}
+            order_data.forEach(element => {
+                last_order_data[element.name.replaceAll("-", "_")] = element.value
+            })
+            console.log(last_order_data)
+            sendOrder(last_order_data)
+        })
     })
-
-
 
     function cartProceed(step) {
         if (step == 1) {
             showOrderUI()
+            $(".confirm-cart").hide()
         }
     }
 
-
     function showOrderUI(type = false) {
         $('.cart-content').html("")
+        if (!type)
+            $(".cart-summ").html(`Spolu €${Number(localStorage.getItem("cartsumm")) + 5} s DPH`)
+        else
+            $(".cart-summ").html(`Spolu €${Number(localStorage.getItem("cartsumm"))} s DPH`)
         let orderui =
             `
         <form class="order-ui">
             <div class="order-punkt">
                 <p class="order-ui-subheader"><b>Spôsob prevzatia objednávky</b></p>
                 <div class="delivery-type-select">
-                    <div class="delivery-courier active-delivery" id="0">Dorucenie kurierom &#x2022; 5€</div>
-                    <div class="delivery-self" id="1">Osobny order</div>
+                    <div class="delivery-courier active-delivery" id="0">Doručenie kuriérom &#x2022; 5€</div>
+                    <div class="delivery-self" id="1">Osobný odber</div>
                 </div>
             </div>
             <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Хто робить замовлення</b></p>
+                <input type="text" class="sender-name-input" name="sender-name-input" placeholder="Meno" required>
+                <input type="text"  class="sender-surname-input" name="sender-surname-input" placeholder="Priezvisko" required>
+                <input type="tel" class="sender-number-input" name="sender-number-input" placeholder="Telefón (formát +421)" required>
+            </div>
+            <div class="order-punkt self-order">
+                <div class="checkbox-wrapper-6">
+                    <input class="tgl tgl-light toggle-sender" id="cb1-6" type="checkbox" name="sender-is-receiver" checked/>
+                    <label class="tgl-btn" for="cb1-6">
+                </div> 
+                <p class="order-ui-subheader"><b>Дані відправника та отримувача збігаються</b></p>
+            </div>
+            <div class="order-punkt receiver-punkt">
                 <p class="order-ui-subheader"><b>Komu bude objednávka doručená</b></p>
-                <input type="text" class="name-input" placeholder="Meno" required>
-                <input type="text" class="surname-input" placeholder="Priezvisko" required>
-                <input type="tel" class="surname-input" placeholder="Telefón (formát +421)" required>
+                <input type="text" class="receiver-name-input" name="receiver-name-input" placeholder="Meno">
+                <input type="text" class="receiver-surname-input" name="receiver-surname-input" placeholder="Priezvisko">
+                <input type="tel" class="receiver-number-input" name="receiver-number-input" placeholder="Telefón (formát +421)">
             </div>
             <div class="order-punkt">
                 <p class="order-ui-subheader"><b>Kam bude objednávka doručená</b></p>
-                    ${getOrderPlace(type)}
-                </div>
+                ${getOrderPlace(type)}
+            </div>
+            <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Напис на листівці</b></p>
+                <input type="text" placeholder="Залиште пустим, якщо листівка не потрібна" name="papertext"/>
+            </div>
+            <div class="order-punkt">
+                <p class="order-ui-subheader"><b>Примітка до замовлення</b></p>
+                <textarea class="prumitka" name="prumitka"></textarea>
+            </div>
+            
             <div class="order-punkt op-calendar">
                 <p class="order-ui-subheader"><b>Kedy bude objednávka doručená</b></p>
                 <div class="time-group">
-                    <p>Data</p>
-                    <p>Time</p>
-                    <input type="date" class="calendar" name="calendar" pattern="\d{4}-\d{2}-\d{2}" required/>
+                    <p>Dátum</p>
+                    <p>Čas</p>
+                    <input type="date" class="calendar" name="calendar" required onclick="this.blur();" tabindex="-1"/>
                     <input class="order-time" name="order-time" required/>
                 </div>
             </div>
+            <button class="confirm-first-step">Pokračovať</button>
         </form>
         `
 
@@ -152,10 +208,14 @@
             'timeFormat': 'H:i',
         })
         var yesterday = new Date(Date.now() - 86400000);
-        if (new Date(Date.now()).getHours() >= 18 || 
-           (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 0) ||
-           (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 6))
+        if (new Date(Date.now()).getHours() >= 18 ||
+            (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 0) ||
+            (new Date(Date.now()).getHours() >= 16 && new Date(Date.now()).getDay() == 6) ||
+            new Date(Date.now()).getHours() >= 12)
             yesterday = new Date(Date.now())
+
+
+
 
         $('.calendar').pignoseCalendar({
             buttons: true,
@@ -170,6 +230,9 @@
                 setTimeChooser(date)
             }
         })
+        $(".receiver-punkt").hide()
+
+        
     }
 
 
@@ -179,32 +242,31 @@
             date = Date.now()
         }
         let today = new Date(date).getDay()
-        console.log(new Date(date))
         let mintime = 0
         let maxtime = 0
 
-        let hoursnow = new Date(date + 1800000 ).getHours()
-        let minutesnow = (Math.round(new Date(date + 1800000 ).getMinutes() / 10) * 10) % 60
+        let hoursnow = new Date(date + 1800000).getHours()
+        let minutesnow = (Math.round(new Date(date + 1800000).getMinutes() / 10) * 10) % 60
         if (today == 0 || today == 6) {
-            mintime = (hoursnow >= 10 ? hoursnow : '10') +":"+ minutesnow
+            mintime = (hoursnow >= 10 ? hoursnow : '10') + ":" + minutesnow
             maxtime = '17.00'
         }
         else {
-            mintime = (hoursnow >= 8 ? hoursnow : '8') + ":" +minutesnow
+            mintime = (hoursnow >= 9 ? hoursnow : '9') + ":" + minutesnow
             maxtime = '19:00'
         }
-        console.log(hoursnow, minutesnow)
         $('.order-time').timepicker('option', 'minTime', mintime)
         $('.order-time').timepicker('option', 'maxTime', maxtime)
+        $('.ui-timepicker-select').val((Number(mintime.split(":")[0]) * 60 * 60) + Number(mintime.split(":")[1]) * 60)
     }
 
     function getOrderPlace(type) {
         if (!type) return `
                 <p class="country-subheader">Krajina doručenia: <b>Slovensko</b></p>
                 <p class="country-subheader">Mesto: <b>Banská Bystrica (97401)</b></p>
-                <input type="text" class="street-input" placeholder="Ulica" required>
-                <input type="tel" class="house-number-input" placeholder="Číslo domu" required>
-                <input type="tel" class="firm-name-input" placeholder="Názov firmy">
+                <input type="text" class="street-input" name="street-input" placeholder="Ulica" required>
+                <input type="tel" class="house-number-input" name="house-number-input" placeholder="Číslo domu" required>
+                <input type="tel" class="firm-name-input" name="firm-name-input" placeholder="Názov firmy (не обов'язково)">
         `
         else return `
                 <p class="country-subheader">Krajina doručenia: <b>Slovensko</b></p>
@@ -212,9 +274,7 @@
                 <p class="country-subheader">Ulica: <b>29 augusta</b></p>
                 <p class="country-subheader">Číslo domu: <b>25</b></p>
                 <p class="country-subheader">Názov firmy: <b>Lilac Kvety</b></p>`
-
     }
-
 
     function showCartContent(cart_content) {
         $(".cart-content").html("")
@@ -222,8 +282,9 @@
         cart_content.forEach(cart_item => {
             $(".cart-content").append(`<div class="cart-flower" id="${cart_item.flowerId}">${createFlowerItem(cart_item)}</div>`)
             cart_summ += parseFloat(cart_item.flowerPrice)
-        })
 
+        })
+        localStorage.setItem("cartsumm", cart_summ)
         $(".cart-summ").html(`Spolu €${Number(cart_summ).toFixed(2)} s DPH`)
         localStorage.setItem("cart", JSON.stringify(cart_content))
     }
@@ -246,4 +307,106 @@
         location = "/"
     })
 
+
+
+    function sendOrder(userData) {
+        let tgResponce = false
+        let dbResponce = false
+        let CART = localStorage.getItem('cart')
+        const cart = parseCart(JSON.parse(CART), userData)
+        const UD = `[${JSON.stringify(userData)}]`
+        CART = `[${CART.substring(1, CART.length - 1)}]`
+        const CURRENTTIME = getTimeNow()
+        const ORDERTIME = `${userData.usertime}/${userData.userdate}`
+        const PACKING = false
+        $.post(`/api/db/createOrder`, { CART, UD, CURRENTTIME, ORDERTIME, PACKING })
+            .always(function (dbstatus) {
+                if (dbstatus) dbResponce = true
+                $.post(`/sendorder`, { cart })
+                    .always(function (tgstatus) {
+                        if (tgstatus) tgResponce = true
+                        if (tgResponce && dbResponce) {
+                            Swal.fire({
+                                title: `Ďakujeme za objednávku!`,
+                                text: `Čoskoro očakávajte telefonát na potvrdenie objednávky.`,
+                                icon: "success",
+                                showDenyButton: false,
+                                confirmButtonText: "Potvrdiť",
+                                denyButtonText: "Zrušiť"
+                            })
+                            localStorage.setItem("cart", "[]")
+                            $('.order-modal-wrapper').hide()
+                            $('.cart-items').hide()
+                        }
+                        else {
+                            Swal.fire({
+                                title: `Oi!`,
+                                text: `Chyba servera`,
+                                icon: "error",
+                                showDenyButton: false,
+                                confirmButtonText: "Áno",
+                                denyButtonText: "Zrušiť"
+                            })
+                        }
+                    })
+            })
+
+    }
+
+
+
+    function getTimeNow() {
+        var currentdate = new Date();
+        return datetime = currentdate.getDate() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds()
+    }
+
+    function parseCart(cart, userData) {
+
+        let date = new Date(0)
+        date.setSeconds(userData.order_time)
+        var timeString = date.toISOString().substring(11, 16)
+
+        var price = 0
+        var parsedCart = `*Нове замовлення: *
+                            %0A${getTimeNow()}`
+        var count = 0
+        cart.forEach(el => {
+            parsedCart += `
+            %0A№${++count}
+            %0A*Товар*: ${el.flowerName} 
+            %0A*Кількість*: ${el.flowerCount} шт
+            %0A*Ціна*: ${el.flowerPrice} €
+            %0A---%0A
+            `
+            price += el.flowerPrice
+        })
+        userData.is_courier ? price += 5 : false
+        parsedCart += `%0AЗагальна ціна корзини : ${price} €`
+        parsedCart += `
+            %0A
+            %0A%0A*Покупець : *
+            %0A---
+            %0A*Ім'я*: ${userData.sender_name_input} ${userData.sender_surname_input} 
+            %0A*Телефон: *: ${userData.sender_number_input}
+            %0A---
+            `
+        if (!userData.sender_is_receiver)
+            parsedCart += `
+                %0A
+                %0A%0A*Отримувач : *
+                %0A---
+                %0A*Ім'я*: ${userData.receiver_name_input} ${userData.receiver_surname_input}
+                %0A*Телефон: *: ${userData.receiver_number_input}
+                %0A---
+                `
+        parsedCart += `
+            %0A*Адреса доставки*: ${!userData.is_courier ? "🙅Заберу сам" : `🗳️${userData.street_input},${userData.house_number_input},${userData.firm_name_input} 
+            %0A*Час доставки*:⏰${timeString} , 📅${userData.calendar}`}`
+        return parsedCart
+    }
 </script>
