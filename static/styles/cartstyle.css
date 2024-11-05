@@ -4,12 +4,21 @@
     --order-button-color: #0eb1d5;
     --sub-main-color: #b7d9e1;
     --modal-color: #a1dbf7;
-    --bgclr: rgba(97, 210, 255, 0.1);
+    --bgclr: rgba(17, 188, 255, 0.1);
 }
 
 * {
-    -webkit-text-stroke: 0.1px;
-    -webkit-text-stroke-color: black;
+    -webkit-text-stroke: 0.3px;
+
+}
+
+.swal2-container button {
+    -webkit-text-stroke: 0px !important;
+    font-size: 125% !important;
+}
+
+.swal2-container h2 {
+    -webkit-text-stroke: 0px !important;
 }
 
 .cart-main {
@@ -29,11 +38,21 @@
 
 .cart-content {
     flex: 3.5;
-
+    height: fit-content;
 }
 
 .info-block {
     flex: 1;
+    padding: 1% 3% !important;
+    font-size: 1.5vw;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(auto-fit, 1fr);
+    height: fit-content;
+}
+
+.info-block>li {
+    margin: 4%;
 }
 
 .cart-data {
@@ -46,15 +65,13 @@
 
 .cart-flower {
     display: grid;
-    grid-template-columns: 1fr 4fr 1fr 1.5fr;
+    grid-template-columns: 25% 37.5% 12.5% 18.75% 6.25%;
     align-items: center;
     text-align: center;
     width: 100%;
     font-size: 1.4vw;
-    grid-gap: 8%;
+    /* grid-gap: 8%; */
     margin: 2% 0;
-
-
 }
 
 .cart-flower-price {
@@ -63,6 +80,39 @@
 
 .cart-flower-image {
     width: 11vw;
+}
+
+.flow-count>i {
+    font-size: 70%;
+    display: none;
+    padding: 5%;
+}
+
+.flow-count:hover>i {
+    display: block;
+    cursor: pointer;
+}
+
+.flow-count>i:hover {
+    color: var(--main-color);
+    -webkit-text-stroke-color: var(--main-color);
+    transition: 0.1s;
+}
+
+.flow-count {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.delete-flower-cart:hover {
+    cursor: pointer;
+    color: var(--main-color);
+    -webkit-text-stroke-color: var(--main-color);
+    transition: 0.3s;
+    font-size: 125%;
 }
 
 .cart-checkout {
@@ -135,7 +185,8 @@
     cursor: pointer;
 }
 
-.cart-data>*, .cart-checkout {
+.cart-data>*,
+.cart-checkout {
     background-color: var(--bgclr);
     padding: 0 3%;
     border-radius: 8px;

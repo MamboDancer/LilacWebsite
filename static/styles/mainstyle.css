@@ -22,6 +22,8 @@
     font-weight: 400;
     font-style: normal;
     user-select: none;
+    -webkit-text-stroke: 0.25px;
+    
 }
 
 :root {
@@ -795,6 +797,7 @@ corner p {
 .discount-price>.flower-price {
     font-size: 125%;
     color: red;
+    -webkit-text-stroke-color: red;
     /* justify-self: center; */
     margin-right: 2%;
 }
@@ -880,7 +883,7 @@ footer .underline {
 .topic-content
 {
     font-size: 1.3vw;
-    -webkit-text-stroke: 0.2px;
+    -webkit-text-stroke: 0.3px;
     -webkit-text-stroke-color: black;
 }
 .topic-element div {

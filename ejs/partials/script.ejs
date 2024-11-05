@@ -610,7 +610,6 @@
     }
     function editCart(flowerName) {
         var oldCart = JSON.parse(localStorage.getItem('cart'))
-        var FLOWER
         for (let i = 0; i < oldCart.length; i++) {
             if (oldCart[i].flowerName === flowerName) {
                 oldCart.splice(i, 1)

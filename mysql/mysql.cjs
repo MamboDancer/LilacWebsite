@@ -105,7 +105,7 @@ removeItem = (req, res) => {
 getOrders = (req, res) => {
     conn.query(`SELECT * from orders`, (err, ress, f) => {
         if (err) res.status(500).json(ress)
-        else return res.status(200).json(ress)
+        else return res.status(200).json(ress) 
     })
 }
 createOrder = (req, res) => {
